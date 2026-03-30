@@ -470,10 +470,10 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
 <script>
 window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:16px;word-wrap:break-word">JS ERROR:\n'+m+'\nRiga: '+l+'\nCol: '+c+'\n\n'+(e&&e.stack?e.stack:'')+'</pre>';};
-const U = { data:'2026-03-26', previsto:{cassa:24538,amazon:15044,totale:39582}, reale:{cassa:24538,amazon:15044,totale:39582}, delta:0, nota:'Dati 26/03 mattina. Spendio: €1.000 credito prepagato (non conteggiato).' };
+const U = { data:'2026-03-30', previsto:{cassa:24538,amazon:15044,totale:39582}, reale:{cassa:31716,amazon:10300,totale:42016}, delta:2434, nota:'Dati 30/03. +7.178 in arrivo (disbursement). Amazon saldo reale 10.300.' };
 const C = {
-    start:'2026-03-26', end:'2026-12-31',
-    init: { cassa:24538, amazon:15044, stock:{t:2005,cB:5622,cN:2394,cT:874,sN:732,sB:5,sG:272} },
+    start:'2026-03-30', end:'2026-12-31',
+    init: { cassa:31716, amazon:10300, stock:{t:1930,cB:5478,cN:2348,cT:821,sN:705,sB:0,sG:248} },
     v: {t:22,cB:44,cN:12,cT:9,sN:6,sB:6,sG:3},
     rn: {t:15.63,c:3.90,s:10.76},
     cm: {t:8.54,s:7.93,c:0.79},
@@ -489,8 +489,8 @@ const C = {
         '2026-11-01':[{i:3015,d:'Acc.Tappeti #7'}],'2026-11-03':[{i:250,d:'Advigator'}],'2026-11-13':[{i:62,d:'ZonWizard'}],'2026-11-14':[{i:610,d:'Trasp.Tappeti #6'}],'2026-11-15':[{i:3900,d:'Saldo Copri B'}],'2026-11-16':[{i:650,d:'IVA Q3/26'},{i:1046,d:'IRES/IRAP 6/6'},{i:915,d:'IVA Q2/26'}],'2026-11-21':[{i:55,d:'Internet Mattia'},{i:48,d:'Internet Angelo'}],'2026-11-30':[{i:7000,d:'2° Acc.IRES/IRAP'}],
         '2026-12-03':[{i:250,d:'Advigator'}],'2026-12-13':[{i:62,d:'ZonWizard'}],'2026-12-16':[{i:660,d:'IVA Q3/26'},{i:916,d:'IVA Q2/26'}],'2026-12-21':[{i:55,d:'Internet Mattia'},{i:48,d:'Internet Angelo'}]
     },
-    rs: {'2026-03-28':{cB:8000,cN:1500,cT:1000},'2026-06-25':{t:2140},'2026-08-21':{t:1800},'2026-09-14':{cB:3000,cN:500,cT:1500},'2026-11-14':{t:1800}},
-    rc: [{d:'2026-03-28',n:'Copri #2',q:10500},{d:'2026-06-25',n:'Tappeti #4',q:2140},{d:'2026-08-21',n:'Tappeti #5',q:1800},{d:'2026-09-14',n:'Copri A',q:5000},{d:'2026-11-14',n:'Tappeti #6',q:1800}]
+    rs: {'2026-06-25':{t:2140},'2026-08-21':{t:1800},'2026-09-14':{cB:3000,cN:500,cT:1500},'2026-11-14':{t:1800}},
+    rc: [{d:'2026-06-25',n:'Tappeti #4',q:2140},{d:'2026-08-21',n:'Tappeti #5',q:1800},{d:'2026-09-14',n:'Copri A',q:5000},{d:'2026-11-14',n:'Tappeti #6',q:1800}]
 };
 
 const f = n => n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
