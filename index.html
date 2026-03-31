@@ -478,10 +478,10 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
 <script>
 window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:16px;word-wrap:break-word">JS ERROR:\n'+m+'\nRiga: '+l+'\nCol: '+c+'\n\n'+(e&&e.stack?e.stack:'')+'</pre>';};
-const U = { data:'2026-04-01', previsto:{cassa:28768,amazon:12230,totale:40998}, reale:{cassa:22000,amazon:12230,totale:34230}, delta:-6768, nota:'TEST 01/04. Simulazione cassa 22.000 per verificare grafico delta.' };
+const U = { data:'2026-03-31', previsto:{cassa:31716,amazon:10833,totale:42549}, reale:{cassa:28768,amazon:11697,totale:40465}, delta:-2084, nota:'Agg. 31/03. IVA non preventivata pagata (-2.948 cassa). Amazon 12.197 meno 500 trattenuti.' };
 const C = {
-    start:'2026-04-01', end:'2026-12-31',
-    init: { cassa:22000, amazon:12230, stock:{t:1867,cB:5376,cN:2313,cT:786,sN:684,sB:0,sG:240} },
+    start:'2026-03-31', end:'2026-12-31',
+    init: { cassa:28768, amazon:11697, stock:{t:1889,cB:5420,cN:2325,cT:795,sN:691,sB:0,sG:244} },
     v: {t:22,cB:44,cN:12,cT:9,sN:6,sB:6,sG:3},
     rn: {t:15.63,c:3.90,s:10.76},
     cm: {t:8.54,s:7.93,c:0.79},
@@ -727,7 +727,7 @@ function renderTable(data) {
     const ss=(v,l,c)=>v===0||v<c?'cr':v<l?'lo':'ok';
     const sc=(v,l,c)=>`<td><span class="sdot sdot-${ss(v,l,c)}"></span>${v}</td>`;
     const ab=ds=>{const a=C.rc.filter(r=>r.d===ds);return a.length?a.map(x=>`<span class="tag tag-restock">📦 ${x.n}</span>`).join(' '):'';}
-    let h=`<tr class="row-good"><td>01/04</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td><td>${s.sB}</td><td>${s.sG}</td></tr>`;
+    let h=`<tr class="row-good"><td>31/03</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td><td>${s.sB}</td><td>${s.sG}</td></tr>`;
     for(const d of data){
         const rc=d.ca<0?'row-bad':d.ca<3000?'row-warn':d.bon>0?'row-good':'';
         const b=ab(d.ds),det=b?(b+(d.det?' · '+d.det:'')):d.det,k=d.st;
@@ -748,7 +748,7 @@ function renderMobileFlows(data, days) {
         <colgroup><col class="mc-col-date"><col class="mc-col-in"><col class="mc-col-out"><col class="mc-col-tot"></colgroup>
         <thead><tr><th>Data</th><th>Entrate</th><th>Uscite</th><th>Liquidità</th></tr></thead><tbody>`;
 
-    h+=`<tr class="mc-init"><td>01/04</td><td style="color:var(--text3)">—</td><td style="color:var(--text3)">—</td><td>€${f(C.init.cassa+C.init.amazon)}</td></tr>`;
+    h+=`<tr class="mc-init"><td>31/03</td><td style="color:var(--text3)">—</td><td style="color:var(--text3)">—</td><td>€${f(C.init.cassa+C.init.amazon)}</td></tr>`;
 
     for(const d of imp){
         const rc=d.ca<0?'mc-bad':d.ca<3000?'mc-warn':d.bon>0?'mc-ok':'';
@@ -782,7 +782,7 @@ function renderMobileStock(allData, days) {
     const mesi=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
 
     const stockDates=[];
-    stockDates.push({lbl:'01/04',st:C.init.stock,rs:false});
+    stockDates.push({lbl:'31/03',st:C.init.stock,rs:false});
 
     if(isMonth){
         let lm=-1;
@@ -1104,7 +1104,7 @@ function renderTableZoom(data, days) {
     let h='';
     if(days===1){
         const ab=ds=>{const a=C.rc.filter(r=>r.d===ds);return a.length?a.map(x=>`<span class="tag tag-restock">📦 ${x.n}</span>`).join(' '):'';}
-        h+=`<tr class="row-good"><td>01/04</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td><td>${s.sB}</td><td>${s.sG}</td></tr>`;
+        h+=`<tr class="row-good"><td>31/03</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td><td>${s.sB}</td><td>${s.sG}</td></tr>`;
         for(const d of data){
             const rc=d.ca<0?'row-bad':d.ca<3000?'row-warn':d.bon>0?'row-good':'';
             const b=ab(d.ds),det=b?(b+(d.det?' · '+d.det:'')):d.det,k=d.st;
