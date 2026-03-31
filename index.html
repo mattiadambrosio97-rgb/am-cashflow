@@ -55,6 +55,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 .hero { order: 1; }
 .delta-card { order: 2; }
 .chart-card { order: 3; }
+.delta-track-card { order: 3; }
 .app > .zoom-bar { order: 4; }
 .m-cards { order: 5; }
 .tbl-card { order: 6; }
@@ -464,6 +465,13 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
         <div id="chartArea"></div>
     </div>
 
+    <!-- DELTA CHART -->
+    <div class="chart-card delta-track-card">
+        <h3>📈 Scostamento vs Proiezione 31/03</h3>
+        <p style="font-size:11px;color:var(--text3);margin:-4px 0 10px">Sopra zero = meglio del previsto · Sotto zero = peggio del previsto</p>
+        <div id="deltaChartArea"></div>
+    </div>
+
     <!-- SUMMARY -->
     <div class="sum-grid" id="sumSection"></div>
 </div>
@@ -492,6 +500,9 @@ const C = {
     rs: {'2026-04-10':{cB:8000,cN:1500,cT:1000},'2026-06-25':{t:2140},'2026-08-21':{t:1800},'2026-09-14':{cB:3000,cN:500,cT:1500},'2026-11-14':{t:1800}},
     rc: [{d:'2026-04-10',n:'Copri #2',q:10500},{d:'2026-06-25',n:'Tappeti #4',q:2140},{d:'2026-08-21',n:'Tappeti #5',q:1800},{d:'2026-09-14',n:'Copri A',q:5000},{d:'2026-11-14',n:'Tappeti #6',q:1800}]
 };
+
+// Snapshot frozen al 31/03/2026 — non toccare
+const C0 = JSON.parse(JSON.stringify(C));
 
 const f = n => n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fD = d => d.toLocaleDateString('it-IT');
@@ -565,6 +576,67 @@ function sim() {
     const last=data[data.length-1],li=I.cassa+I.amazon,sf=last.st,cm=C.cm;
     const vm=sf.t*cm.t+(sf.cB+sf.cN+sf.cT)*cm.c+(sf.sN+sf.sB+sf.sG)*cm.s,mt=2140*cm.t;
     return{data,s:{li,lf:last.tot,cMin:Math.min(...data.map(d=>d.ca)),cMax:Math.max(...data.map(d=>d.ca)),rTot:data.reduce((a,d)=>a+d.ric,0),sTot:data.reduce((a,d)=>a+d.usc,0),bTot:data.reduce((a,d)=>a+d.bon,0),sf,vr:last.tot-li,vm,mt,pt:last.tot+vm+mt,gc:{t:Math.floor(sf.t/v.t),cB:Math.floor(sf.cB/v.cB),cN:Math.floor(sf.cN/v.cN),cT:Math.floor(sf.cT/v.cT),sN:Math.floor(sf.sN/v.sN),sB:Math.floor(sf.sB/v.sB),sG:Math.floor(sf.sG/v.sG)}}};
+}
+
+function simSnap(){
+    const bk={start:C.start,init:JSON.parse(JSON.stringify(C.init))};
+    C.start=C0.start;C.init=JSON.parse(JSON.stringify(C0.init));
+    const r=sim();
+    C.start=bk.start;C.init=bk.init;
+    return r;
+}
+
+function renderDeltaChart(data,snapMap){
+    var area=document.getElementById('deltaChartArea');
+    if(!area)return;
+    var mob=isMobile();
+    var sam=[];
+    var step=Math.max(1,Math.floor(data.length/(mob?30:60)));
+    for(var i=0;i<data.length;i+=step){var d=data[i],sn=snapMap[d.ds];if(sn)sam.push({data:d.data,ds:d.ds,dTot:Math.round((d.tot-sn.tot)*100)/100,dCa:Math.round((d.ca-sn.ca)*100)/100,dAm:Math.round((d.am-sn.am)*100)/100});}
+    if(sam.length<2){area.innerHTML='<p style="color:var(--text3);font-size:12px;padding:10px">Dati insufficienti.</p>';return;}
+    var allZero=true;for(var i=0;i<sam.length;i++){if(sam[i].dTot!==0||sam[i].dCa!==0||sam[i].dAm!==0){allZero=false;break;}}
+    if(allZero){area.innerHTML='<p style="color:var(--green);font-size:13px;padding:14px;text-align:center">✓ Proiezione perfettamente allineata allo snapshot. I delta appariranno dopo il prossimo aggiornamento dati.</p>';return;}
+    var allV=[];for(var i=0;i<sam.length;i++){allV.push(sam[i].dTot,sam[i].dCa,sam[i].dAm);}
+    var mn=Math.min.apply(null,allV),mx=Math.max.apply(null,allV);
+    var pad=((mx-mn)*0.12)||200;mn-=pad;mx+=pad;
+    var range=mx-mn;if(range===0)range=1;
+    var PL=mob?5:50,PR=10,PT=8,PB=22,W=mob?875:800,H=140;
+    var cw=W-PL-PR,ch=H-PT-PB;
+    var blue=getCSS('--blue'),green=getCSS('--green'),orange=getCSS('--orange');
+    var gridC=getCSS('--chart-grid'),txtC=getCSS('--text3');
+    function px(i){return PL+(i/(sam.length-1))*cw;}
+    function py(v){return PT+ch-(((v-mn)/range)*ch);}
+    var zY=py(0);
+    var svgStyle=mob?'display:block':'width:100%;height:auto;max-height:140px;display:block';
+    var pAR=mob?' preserveAspectRatio="xMinYMin meet"':'';
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'"'+pAR+' style="'+svgStyle+'">';
+    // Zero line
+    svg+='<line x1="'+PL+'" y1="'+zY+'" x2="'+(W-PR)+'" y2="'+zY+'" stroke="'+txtC+'" stroke-width="1" stroke-dasharray="4,3"/>';
+    if(!mob)svg+='<text x="'+(PL-4)+'" y="'+(zY+3)+'" fill="'+txtC+'" font-size="9" font-family="Inter,sans-serif" text-anchor="end">0</text>';
+    // Green/red fill for total delta
+    var pathAbove='M'+px(0)+','+zY,pathBelow='M'+px(0)+','+zY;
+    for(var i=0;i<sam.length;i++){var x=px(i);pathAbove+=' L'+x+','+(sam[i].dTot>0?py(sam[i].dTot):zY);pathBelow+=' L'+x+','+(sam[i].dTot<0?py(sam[i].dTot):zY);}
+    pathAbove+=' L'+px(sam.length-1)+','+zY+' Z';pathBelow+=' L'+px(sam.length-1)+','+zY+' Z';
+    svg+='<path d="'+pathAbove+'" fill="rgba(0,214,143,0.15)"/>';
+    svg+='<path d="'+pathBelow+'" fill="rgba(255,107,107,0.15)"/>';
+    // Lines
+    var lT=[],lC=[],lA=[];
+    for(var i=0;i<sam.length;i++){lT.push(px(i).toFixed(1)+','+py(sam[i].dTot).toFixed(1));lC.push(px(i).toFixed(1)+','+py(sam[i].dCa).toFixed(1));lA.push(px(i).toFixed(1)+','+py(sam[i].dAm).toFixed(1));}
+    svg+='<polyline points="'+lT.join(' ')+'" fill="none" stroke="'+blue+'" stroke-width="2" stroke-linejoin="round"/>';
+    svg+='<polyline points="'+lC.join(' ')+'" fill="none" stroke="'+green+'" stroke-width="1.5" stroke-linejoin="round"/>';
+    svg+='<polyline points="'+lA.join(' ')+'" fill="none" stroke="'+orange+'" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="4,2"/>';
+    // X labels
+    var xFS=mob?11:8,lblStep=Math.max(1,Math.floor(sam.length/(mob?4:6)));
+    for(var i=0;i<sam.length;i++){if(i%lblStep===0){svg+='<text x="'+px(i)+'" y="'+(H-3)+'" fill="'+txtC+'" font-size="'+xFS+'" font-family="Inter,sans-serif" text-anchor="middle">'+fD(sam[i].data)+'</text>';}}
+    // Y labels (min/max)
+    if(!mob){var yFS=9;svg+='<text x="'+(PL-4)+'" y="'+(PT+8)+'" fill="'+txtC+'" font-size="'+yFS+'" font-family="Inter,sans-serif" text-anchor="end">'+(mx>=1000?'+'+(mx/1000).toFixed(1)+'k':'+'+Math.round(mx))+'</text>';svg+='<text x="'+(PL-4)+'" y="'+(PT+ch-2)+'" fill="'+txtC+'" font-size="'+yFS+'" font-family="Inter,sans-serif" text-anchor="end">'+(mn<=-1000?(mn/1000).toFixed(1)+'k':Math.round(mn))+'</text>';}
+    svg+='</svg>';
+    var legend='<div class="css-legend" style="margin-top:6px">';
+    legend+='<div class="css-legend-item"><div style="width:14px;height:3px;background:'+blue+'"></div>Δ Totale</div>';
+    legend+='<div class="css-legend-item"><div style="width:14px;height:3px;background:'+green+'"></div>Δ Cassa</div>';
+    legend+='<div class="css-legend-item"><div style="width:14px;height:3px;background:'+orange+';border-top:1px dashed '+orange+'"></div>Δ Amazon</div>';
+    legend+='</div>';
+    area.innerHTML=svg+legend;
 }
 
 function renderKPI(s) {
@@ -849,7 +921,7 @@ function renderRevBar() {
 function getCSS(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
 
 function isMobile(){return window.innerWidth<=1024;}
-function renderChart(data) {
+function renderChart(data, snapMap) {
     var area=document.getElementById('chartArea');
     var mob=isMobile();
     var sam=[];
@@ -879,6 +951,9 @@ function renderChart(data) {
     svg+='<polyline points="'+line('tot')+'" fill="none" stroke="'+blue+'" stroke-width="2.5" stroke-linejoin="round"/>';
     svg+='<polyline points="'+line('ca')+'" fill="none" stroke="'+green+'" stroke-width="2" stroke-linejoin="round"/>';
     svg+='<polyline points="'+line('am')+'" fill="none" stroke="'+orange+'" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6,3"/>';
+    // Snapshot line (proiezione 31/03)
+    var purple=getCSS('--purple');
+    if(snapMap){var snapPts=[];for(var i=0;i<sam.length;i++){var sn=snapMap[sam[i].ds];if(sn)snapPts.push(px(i).toFixed(1)+','+py(sn.tot).toFixed(1));}if(snapPts.length>1)svg+='<polyline points="'+snapPts.join(' ')+'" fill="none" stroke="'+purple+'" stroke-width="1.5" stroke-linejoin="round" stroke-dasharray="8,4" opacity="0.5"/>';}
     for(var i=0;i<sam.length;i++){var xx=px(i);var _yT=py(sam[i].tot),_yC=py(sam[i].ca),_yA=py(sam[i].am);var _minY=Math.max(Math.min(_yT,_yC,_yA)-25,PT);var _maxY=Math.min(Math.max(_yT,_yC,_yA)+25,PT+ch);svg+='<rect x="'+(xx-W/(sam.length*2))+'" y="'+_minY+'" width="'+(W/sam.length)+'" height="'+(_maxY-_minY)+'" fill="transparent" data-idx="'+i+'" class="chart-hover"/>';}
     svg+='<line id="chartVLine" x1="0" y1="'+PT+'" x2="0" y2="'+(PT+ch)+'" stroke="'+txtC+'" stroke-width="0.5" stroke-dasharray="4,3" style="display:none"/>';
     svg+='<circle id="chartDotT" r="4" fill="'+blue+'" style="display:none"/>';
@@ -888,11 +963,12 @@ function renderChart(data) {
     var yAxisHtml='';
     if(mob){var yAW=50;yAxisHtml='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+yAW+' '+H+'" preserveAspectRatio="xMaxYMin meet" style="display:block">';for(var t=0;t<=4;t++){var yy=py(mn+(range*(t/4)));var val=mn+(range*(t/4));var lbl=val>=1000?'€'+(val/1000).toFixed(1)+'k':'€'+Math.round(val);yAxisHtml+='<text x="'+(yAW-4)+'" y="'+(yy+3)+'" fill="'+txtC+'" font-size="'+yFS+'" font-family="Inter,sans-serif" text-anchor="end">'+lbl+'</text>';}yAxisHtml+='</svg>';}
     var tipFS=mob?'14px':'12px';
-    var tipHtml='<div id="chartTip" style="display:none;position:absolute;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:'+tipFS+';pointer-events:none;z-index:20;box-shadow:0 4px 12px rgba(0,0,0,0.3);min-width:160px"><div id="tipDate" style="font-weight:700;margin-bottom:6px"></div><div style="display:flex;align-items:center;gap:6px;margin:3px 0"><div style="width:8px;height:8px;background:'+blue+'"></div><span>Totale:</span><strong id="tipTot"></strong></div><div style="display:flex;align-items:center;gap:6px;margin:3px 0"><div style="width:8px;height:8px;background:'+green+'"></div><span>Cassa:</span><strong id="tipCa"></strong></div><div style="display:flex;align-items:center;gap:6px;margin:3px 0"><div style="width:8px;height:8px;background:'+orange+'"></div><span>Amazon:</span><strong id="tipAm"></strong></div></div>';
+    var tipHtml='<div id="chartTip" style="display:none;position:absolute;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:'+tipFS+';pointer-events:none;z-index:20;box-shadow:0 4px 12px rgba(0,0,0,0.3);min-width:180px"><div id="tipDate" style="font-weight:700;margin-bottom:6px"></div><div style="display:flex;align-items:center;gap:6px;margin:3px 0"><div style="width:8px;height:8px;background:'+blue+'"></div><span>Totale:</span><strong id="tipTot"></strong></div><div style="display:flex;align-items:center;gap:6px;margin:3px 0"><div style="width:8px;height:8px;background:'+green+'"></div><span>Cassa:</span><strong id="tipCa"></strong></div><div style="display:flex;align-items:center;gap:6px;margin:3px 0"><div style="width:8px;height:8px;background:'+orange+'"></div><span>Amazon:</span><strong id="tipAm"></strong></div><div id="tipSnap" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);font-size:11px;color:var(--text2)"></div></div>';
     var legend='<div class="css-legend">';
     legend+='<div class="css-legend-item"><div style="width:16px;height:3px;background:'+blue+'"></div>Totale</div>';
     legend+='<div class="css-legend-item"><div style="width:16px;height:3px;background:'+green+'"></div>Cassa</div>';
     legend+='<div class="css-legend-item"><div style="width:16px;height:3px;background:'+orange+';border-top:1px dashed '+orange+'"></div>Amazon</div>';
+    if(snapMap)legend+='<div class="css-legend-item"><div style="width:16px;height:2px;background:'+purple+';border-top:1px dashed '+purple+';opacity:0.5"></div>Snapshot 31/03</div>';
     legend+='</div>';
     area.style.position='relative';
     if(mob){area.innerHTML=tipHtml+'<div class="chart-mob-flex"><div class="chart-mob-ycol">'+yAxisHtml+'</div><div class="chart-mob-scroll"><div style="position:relative">'+svg+'</div></div></div>'+legend;}
@@ -911,6 +987,8 @@ function renderChart(data) {
         tip.querySelector('#tipTot').textContent='€'+f(d.tot);
         tip.querySelector('#tipCa').textContent='€'+f(d.ca);
         tip.querySelector('#tipAm').textContent='€'+f(d.am);
+        var snapEl=tip.querySelector('#tipSnap');
+        if(snapEl&&snapMap){var sn=snapMap[d.ds];if(sn){var dt=d.tot-sn.tot;snapEl.innerHTML='Snap: €'+f(sn.tot)+' · <strong style="color:var('+(dt>=0?'--green':'--red')+')">Δ '+(dt>=0?'+':'')+f(dt)+'</strong>';}else{snapEl.textContent='';}}
         var rect=svgEl.getBoundingClientRect();
         var pctX=(x/W);
         tip.style.display='block';
@@ -1012,7 +1090,8 @@ const App={
         document.getElementById('themeToggle').textContent = this.theme==='dark' ? '☀️' : '🌖';
         try{
         const{data,s}=sim();this.allData=data;this.s=s;
-        renderKPI(s);renderDelta();renderSim();renderRevBar();renderStock(s);renderSum(s);renderChart(data);
+        const{data:snapData}=simSnap();this.snapMap={};for(const d of snapData)this.snapMap[d.ds]=d;
+        renderKPI(s);renderDelta();renderSim();renderRevBar();renderStock(s);renderSum(s);renderChart(data,this.snapMap);renderDeltaChart(data,this.snapMap);
         this.applyZoom();
         this.applyStockZoom();
         }catch(e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:14px">ERRORE: '+e.message+'\n\n'+e.stack+'</pre>';}
@@ -1056,7 +1135,7 @@ const App={
         document.documentElement.setAttribute('data-theme', this.theme);
         document.getElementById('themeToggle').textContent = this.theme==='dark' ? '☀️' : '🌖';
         try{localStorage.setItem('cf-theme', this.theme)}catch(e){}
-        renderChart(this.allData);
+        renderChart(this.allData,this.snapMap);
     },
     simUpdate(el){
         const key=el.dataset.key, val=parseInt(el.value)||0;
@@ -1074,7 +1153,7 @@ const App={
     },
     simApply(){
         const{data,s}=sim();this.allData=data;this.s=s;
-        renderKPI(s);renderStock(s);renderSum(s);renderChart(data);
+        renderKPI(s);renderStock(s);renderSum(s);renderChart(data,this.snapMap);renderDeltaChart(data,this.snapMap);
         this.applyZoom();
         this.applyStockZoom();
     },
