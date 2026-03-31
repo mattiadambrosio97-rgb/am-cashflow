@@ -501,8 +501,11 @@ const C = {
     rc: [{d:'2026-04-10',n:'Copri #2',q:10500},{d:'2026-06-25',n:'Tappeti #4',q:2140},{d:'2026-08-21',n:'Tappeti #5',q:1800},{d:'2026-09-14',n:'Copri A',q:5000},{d:'2026-11-14',n:'Tappeti #6',q:1800}]
 };
 
-// Snapshot frozen al 31/03/2026 — non toccare
-const C0 = JSON.parse(JSON.stringify(C));
+// Snapshot frozen al 31/03/2026 — NON MODIFICARE MAI
+const C0 = {
+    start:'2026-03-31',
+    init:{ cassa:28768, amazon:11697, stock:{t:1889,cB:5420,cN:2325,cT:795,sN:691,sB:0,sG:244} }
+};
 
 const f = n => n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fD = d => d.toLocaleDateString('it-IT');
