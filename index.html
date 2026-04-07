@@ -478,10 +478,10 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
 <script>
 window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:16px;word-wrap:break-word">JS ERROR:\n'+m+'\nRiga: '+l+'\nCol: '+c+'\n\n'+(e&&e.stack?e.stack:'')+'</pre>';};
-const U = { data:'2026-04-07', previsto:{cassa:28768,amazon:11697,totale:40465}, reale:{cassa:27373,amazon:7778,totale:35151}, delta:-5314, nota:'Agg. 07/04. Cassa Postale 27.373 (+7.280 in arrivo da Amazon). Saldo Amazon 15.658 - 7.280 (in arrivo) - 600 (trattenuti) = 7.778.' };
+const U = { data:'2026-04-07', previsto:{cassa:28768,amazon:11697,totale:40465}, reale:{cassa:34653,amazon:7778,totale:42431}, delta:1966, nota:'Agg. 07/04. Cassa Postale 27.373 + 7.280 in arrivo da Amazon = 34.653. Saldo Amazon 15.658 - 7.280 (gia conteggiati in cassa) - 600 (trattenuti) = 7.778.' };
 const C = {
     start:'2026-04-07', end:'2026-12-31',
-    init: { cassa:27373, amazon:7778, stock:{t:1797,cB:5192,cN:2257,cT:728,sN:634,sB:0,sG:1920} },
+    init: { cassa:34653, amazon:7778, stock:{t:1797,cB:5192,cN:2257,cT:728,sN:634,sB:0,sG:1920} },
     v: {t:22,cB:44,cN:12,cT:9,sN:6,sB:6,sG:3},
     rn: {t:15.63,c:3.90,s:10.76},
     cm: {t:8.54,s:7.93,c:0.79},
@@ -504,7 +504,7 @@ const C = {
 // Snapshot frozen al 07/04/2026 — NON MODIFICARE MAI
 const C0 = {
     start:'2026-04-07',
-    init:{ cassa:27373, amazon:7778, stock:{t:1797,cB:5192,cN:2257,cT:728,sN:634,sB:0,sG:1920} }
+    init:{ cassa:34653, amazon:7778, stock:{t:1797,cB:5192,cN:2257,cT:728,sN:634,sB:0,sG:1920} }
 };
 
 const f = n => n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
