@@ -467,7 +467,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
     <!-- DELTA CHART -->
     <div class="chart-card delta-track-card">
-        <h3>📈 Scostamento vs Proiezione 11/04</h3>
+        <h3>📈 Scostamento vs Proiezione 12/04</h3>
         <p style="font-size:11px;color:var(--text3);margin:-4px 0 10px">Sopra zero = meglio del previsto · Sotto zero = peggio del previsto</p>
         <div id="deltaChartArea"></div>
     </div>
@@ -478,10 +478,10 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
 <script>
 window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:16px;word-wrap:break-word">JS ERROR:\n'+m+'\nRiga: '+l+'\nCol: '+c+'\n\n'+(e&&e.stack?e.stack:'')+'</pre>';};
-const U = { data:'2026-04-11', previsto:{cassa:34653,amazon:7778,totale:42431}, reale:{cassa:33286,amazon:11300,totale:44586}, delta:2155, nota:'Agg. 11/04. Cassa 33.286. Amazon ~11.300. IRES/IRAP ricalcolati su utile 9.039 (12.539 - 3.500 perdita esercizio precedente).' };
+const U = { data:'2026-04-12', previsto:{cassa:33286,amazon:11300,totale:44586}, reale:{cassa:36418,amazon:8117,totale:44535}, delta:-51, nota:'Agg. 12/04. Cassa Postale 32.277 + 4.141 in arrivo da Amazon = 36.418. Saldo Amazon 12.858 - 4.141 (gia in cassa) - 600 (trattenuti) = 8.117. IRES/IRAP su utile 9.039.' };
 const C = {
-    start:'2026-04-11', end:'2026-12-31',
-    init: { cassa:33286, amazon:11300, stock:{t:1711,cB:5024,cN:2213,cT:663,sN:578,sB:0,sG:170} },
+    start:'2026-04-12', end:'2026-12-31',
+    init: { cassa:36418, amazon:8117, stock:{t:1683,cB:4954,cN:2187,cT:655,sN:565,sB:0,sG:152} },
     v: {t:22,cB:44,cN:12,cT:9,sN:6,sB:6,sG:3},
     rn: {t:15.63,c:3.90,s:10.76},
     cm: {t:8.54,s:7.93,c:0.79},
@@ -501,10 +501,10 @@ const C = {
     rc: [{d:'2026-04-23',n:'Copri #2',q:10500},{d:'2026-06-25',n:'Tappeti #4',q:2140},{d:'2026-08-21',n:'Tappeti #5',q:1800},{d:'2026-09-14',n:'Copri A',q:5000},{d:'2026-11-14',n:'Tappeti #6',q:1800}]
 };
 
-// Snapshot frozen al 11/04/2026 — NON MODIFICARE MAI
+// Snapshot frozen al 12/04/2026 — NON MODIFICARE MAI
 const C0 = {
-    start:'2026-04-11',
-    init:{ cassa:33286, amazon:11300, stock:{t:1711,cB:5024,cN:2213,cT:663,sN:578,sB:0,sG:170} }
+    start:'2026-04-12',
+    init:{ cassa:36418, amazon:8117, stock:{t:1683,cB:4954,cN:2187,cT:655,sN:565,sB:0,sG:152} }
 };
 
 const f = n => n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -727,7 +727,7 @@ function renderTable(data) {
     const ss=(v,l,c)=>v===0||v<c?'cr':v<l?'lo':'ok';
     const sc=(v,l,c)=>`<td><span class="sdot sdot-${ss(v,l,c)}"></span>${v}</td>`;
     const ab=ds=>{const a=C.rc.filter(r=>r.d===ds);return a.length?a.map(x=>`<span class="tag tag-restock">📦 ${x.n}</span>`).join(' '):'';}
-    let h=`<tr class="row-good"><td>11/04</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td><td>${s.sB}</td><td>${s.sG}</td></tr>`;
+    let h=`<tr class="row-good"><td>12/04</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td><td>${s.sB}</td><td>${s.sG}</td></tr>`;
     for(const d of data){
         const rc=d.ca<0?'row-bad':d.ca<3000?'row-warn':d.bon>0?'row-good':'';
         const b=ab(d.ds),det=b?(b+(d.det?' · '+d.det:'')):d.det,k=d.st;
@@ -748,7 +748,7 @@ function renderMobileFlows(data, days) {
         <colgroup><col class="mc-col-date"><col class="mc-col-in"><col class="mc-col-out"><col class="mc-col-tot"></colgroup>
         <thead><tr><th>Data</th><th>Entrate</th><th>Uscite</th><th>Liquidità</th></tr></thead><tbody>`;
 
-    h+=`<tr class="mc-init"><td>11/04</td><td style="color:var(--text3)">—</td><td style="color:var(--text3)">—</td><td>€${f(C.init.cassa+C.init.amazon)}</td></tr>`;
+    h+=`<tr class="mc-init"><td>12/04</td><td style="color:var(--text3)">—</td><td style="color:var(--text3)">—</td><td>€${f(C.init.cassa+C.init.amazon)}</td></tr>`;
 
     for(const d of imp){
         const rc=d.ca<0?'mc-bad':d.ca<3000?'mc-warn':d.bon>0?'mc-ok':'';
@@ -782,7 +782,7 @@ function renderMobileStock(allData, days) {
     const mesi=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
 
     const stockDates=[];
-    stockDates.push({lbl:'11/04',st:C.init.stock,rs:false});
+    stockDates.push({lbl:'12/04',st:C.init.stock,rs:false});
 
     if(isMonth){
         let lm=-1;
@@ -1013,7 +1013,7 @@ function renderChart(data, snapMap) {
     legend+='<div class="css-legend-item"><div style="width:16px;height:3px;background:'+blue+'"></div>Totale</div>';
     legend+='<div class="css-legend-item"><div style="width:16px;height:3px;background:'+green+'"></div>Cassa</div>';
     legend+='<div class="css-legend-item"><div style="width:16px;height:3px;background:'+orange+';border-top:1px dashed '+orange+'"></div>Amazon</div>';
-    if(snapMap)legend+='<div class="css-legend-item"><div style="width:16px;height:2px;background:'+purple+';border-top:1px dashed '+purple+';opacity:0.5"></div>Snapshot 11/04</div>';
+    if(snapMap)legend+='<div class="css-legend-item"><div style="width:16px;height:2px;background:'+purple+';border-top:1px dashed '+purple+';opacity:0.5"></div>Snapshot 12/04</div>';
     legend+='</div>';
     area.style.position='relative';
     if(mob){area.innerHTML=tipHtml+'<div class="chart-mob-flex"><div class="chart-mob-ycol">'+yAxisHtml+'</div><div class="chart-mob-scroll"><div style="position:relative">'+svg+'</div></div></div>'+legend;}
@@ -1104,7 +1104,7 @@ function renderTableZoom(data, days) {
     let h='';
     if(days===1){
         const ab=ds=>{const a=C.rc.filter(r=>r.d===ds);return a.length?a.map(x=>`<span class="tag tag-restock">📦 ${x.n}</span>`).join(' '):'';}
-        h+=`<tr class="row-good"><td>11/04</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td><td>${s.sB}</td><td>${s.sG}</td></tr>`;
+        h+=`<tr class="row-good"><td>12/04</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td><td>${s.sB}</td><td>${s.sG}</td></tr>`;
         for(const d of data){
             const rc=d.ca<0?'row-bad':d.ca<3000?'row-warn':d.bon>0?'row-good':'';
             const b=ab(d.ds),det=b?(b+(d.det?' · '+d.det:'')):d.det,k=d.st;
