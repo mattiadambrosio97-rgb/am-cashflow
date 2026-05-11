@@ -479,16 +479,16 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
 <script>
 window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:16px;word-wrap:break-word">JS ERROR:\n'+m+'\nRiga: '+l+'\nCol: '+c+'\n\n'+(e&&e.stack?e.stack:'')+'</pre>';};
-const U = { data:'2026-05-11', previsto:{cassa:37962,amazon:14308,totale:52270}, reale:{cassa:41742,amazon:11866,totale:53608}, delta:1338, nota:'Agg. 11/05 mattina. Cassa Postale 41.742 (36.946 + 4.796 da Amazon). Saldo Amazon 11.866 (16.712 - 4.796 - 50). Acc.Tappeti #5 pagato oggi 11/05 (chain shift +1gg). Restock Copri #2 splittato: 1.000 Trasp arrivano 15/05, 8.000 Bianchi + 1.500 Neri arrivano 15/06.' };
+const U = { data:'2026-05-11', previsto:{cassa:41742,amazon:11866,totale:53608}, reale:{cassa:30871,amazon:11866,totale:42737}, delta:-10871, nota:'Agg. 11/05 sera. Cassa Postale 30.871 (34.249 - 8.174 IVA Q1/26 + 4.796 Amazon in arrivo). Saldo Amazon 11.866. Già pagati oggi: Acc.Tappeti #5 30% €2.700 + IVA Q1/26 €8.174 (rimossi da sp per evitare doppione). IVA Q2/25 spostata al 18/05. Restock Copri #2 splittato: 1.000 Trasp 15/05, 8.000 Bianchi + 1.500 Neri 15/06.' };
 const C = {
     start:'2026-05-11', end:'2026-12-31',
-    init: { cassa:41742, amazon:11866, stock:{t:1131,cB:3587,cN:1685,cT:320,sN:209,sB:0,sG:0} },
+    init: { cassa:30871, amazon:11866, stock:{t:1131,cB:3587,cN:1685,cT:320,sN:209,sB:0,sG:0} },
     v: {t:22,cB:44,cN:12,cT:9,sN:6,sB:6,sG:3},
     rn: {t:15.63,c:3.90,s:10.76},
     cm: {t:8.54,s:7.93,c:0.79},
     compenso: 0, ppc:{t:32,c:65,s:53}, altri:{t:0,c:0,s:0},
     sp: {
-        '2026-05-12':[{i:2700,d:'Acc.Tappeti #5 30%'},{i:2100,d:'IVA Q2/25',f:1}],'2026-05-13':[{i:62,d:'ZonWizard'}],'2026-05-15':[{i:7035,d:'Saldo Tappeti #4'}],'2026-05-16':[{i:8174,d:'IVA Q1/26',f:1},{i:400,d:'F24 Imp.Royalties'}],'2026-05-20':[{i:840,d:'Acc.Copri A'}],'2026-05-21':[{i:103,d:'Internet Mat-Ang'}],'2026-05-27':[{i:1000,d:'MAT-ANG'}],
+        '2026-05-13':[{i:62,d:'ZonWizard'}],'2026-05-15':[{i:7035,d:'Saldo Tappeti #4'}],'2026-05-16':[{i:400,d:'F24 Imp.Royalties'}],'2026-05-18':[{i:2100,d:'IVA Q2/25',f:1}],'2026-05-20':[{i:840,d:'Acc.Copri A'}],'2026-05-21':[{i:103,d:'Internet Mat-Ang'}],'2026-05-27':[{i:1000,d:'MAT-ANG'}],
         '2026-06-03':[{i:300,d:'Advigator'}],'2026-06-05':[{i:8300,d:'Sped.Tappeti #4'}],'2026-06-13':[{i:62,d:'ZonWizard'}],'2026-06-20':[{i:1960,d:'Saldo Copri A'}],'2026-06-21':[{i:103,d:'Internet Mat-Ang'}],'2026-06-25':[{i:610,d:'Trasp.Tappeti #4'}],'2026-06-27':[{i:1000,d:'MAT-ANG'}],'2026-06-29':[{i:1268,d:'Saldo IRES/IRAP 2025'}],'2026-06-30':[{i:389,d:'1° Acc.IRES'}],
         '2026-07-03':[{i:300,d:'Advigator'}],'2026-07-07':[{i:3015,d:'Acc.Tappeti #6'}],'2026-07-13':[{i:62,d:'ZonWizard'}],'2026-07-21':[{i:103,d:'Internet Mat-Ang'}],'2026-07-27':[{i:1000,d:'MAT-ANG'}],'2026-07-31':[{i:915,d:'Commercialista'}],
         '2026-08-01':[{i:6500,d:'Saldo Tappeti #5 70%'}],'2026-08-03':[{i:300,d:'Advigator'}],'2026-08-13':[{i:62,d:'ZonWizard'}],'2026-08-15':[{i:10500,d:'Sped.Tappeti #5'}],'2026-08-16':[{i:883,d:'IVA Q2/26'}],'2026-08-21':[{i:103,d:'Internet Mat-Ang'}],'2026-08-25':[{i:610,d:'Trasp.Tappeti #5'}],'2026-08-27':[{i:1000,d:'MAT-ANG'}],'2026-08-30':[{i:1650,d:'Sped.Copri A'}],
@@ -501,10 +501,10 @@ const C = {
     rc: [{d:'2026-05-15',n:'Copri #2 Trasp',q:1000},{d:'2026-06-15',n:'Copri #2 B+N',q:9500},{d:'2026-06-25',n:'Tappeti #4',q:2140},{d:'2026-08-25',n:'Tappeti #5',q:1600},{d:'2026-09-14',n:'Copri A',q:5000},{d:'2026-11-14',n:'Tappeti #6',q:1800}]
 };
 
-// Snapshot frozen al 11/05/2026 — NON MODIFICARE MAI
+// Snapshot frozen al 11/05/2026 sera — NON MODIFICARE MAI
 const C0 = {
     start:'2026-05-11',
-    init:{ cassa:41742, amazon:11866, stock:{t:1131,cB:3587,cN:1685,cT:320,sN:209,sB:0,sG:0} }
+    init:{ cassa:30871, amazon:11866, stock:{t:1131,cB:3587,cN:1685,cT:320,sN:209,sB:0,sG:0} }
 };
 
 const f = n => n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
