@@ -530,7 +530,7 @@ function sim() {
     const data=[]; let cur=new Date(start.getTime()+D); let ppcIvaAccum=0;
     while(cur<=end){
         const ds=cur.toISOString().slice(0,10),r=rs[ds];
-        if(r){if(r.t)st.t+=r.t;if(r.cB!==undefined){st.cB+=r.cB;st.cN+=r.cN;st.cT+=r.cT;}}
+        if(r){for(const k in r)if(typeof r[k]==='number')st[k]+=r[k];}
         const vB=Math.min(v.cB,st.cB),vN=Math.min(v.cN,st.cN),vT=Math.min(v.cT,st.cT);
         st.cB-=vB;st.cN-=vN;st.cT-=vT;
         const vTp=Math.min(v.t,st.t);st.t-=vTp;
