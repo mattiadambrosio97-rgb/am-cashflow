@@ -479,7 +479,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
 <script>
 window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:16px;word-wrap:break-word">JS ERROR:\n'+m+'\nRiga: '+l+'\nCol: '+c+'\n\n'+(e&&e.stack?e.stack:'')+'</pre>';};
-const U = { data:'2026-05-12', previsto:{cassa:30871,amazon:11866,totale:42737}, reale:{cassa:29353,amazon:12996,totale:42349}, delta:-388, nota:'Agg. 12/05. Cassa Postale 29.353. Saldo Amazon 12.996 (13.296 - 300). Già pagato Acc.Copri #3 30% €1.558,55 (cambio 0,86, escluso da sp). Aggiunti Saldo Copri #3 70% €3.890 al 21/06 (cambio cautelativo 0,92) e Sped.Copri #3 €2.500 al 09/09. Nuovo restock 10.000 pz (4.750 B + 2.750 N + 2.500 T) in arrivo 19/09. Bonifici Amazon ogni 10 giorni a partire dal 20/05.' };
+const U = { data:'2026-05-12', previsto:{cassa:30871,amazon:11866,totale:42737}, reale:{cassa:29353,amazon:12996,totale:42349}, delta:-388, nota:'Agg. 12/05. Cassa Postale 29.353. Saldo Amazon 12.996 (13.296 - 300). Già pagato Acc.Copri #3 30% €1.558,55 (cambio 0,86, escluso da sp). Aggiunti Saldo Copri #3 70% €3.890 al 21/06 (cambio cautelativo 0,92) e Sped.Copri #3 €2.500 al 09/09. Nuovo restock 10.000 pz (4.750 B + 2.750 N + 2.500 T) in arrivo 19/09. Bonifici Amazon ogni 10 giorni a partire dal 20/05. Aggiunti Acc.Copri #4 30% €1.600 al 01/12 (10k pz proporzioni Copri #3) e Acc.Tappeti #8 30% €3.100 al 03/12 (1.600 pz).' };
 const C = {
     start:'2026-05-12', end:'2026-12-31',
     init: { cassa:29353, amazon:12996, stock:{t:1104,cB:3522,cN:1651,cT:309,sN:184,sB:0,sG:0} },
@@ -495,7 +495,7 @@ const C = {
         '2026-09-03':[{i:300,d:'Advigator'}],'2026-09-09':[{i:2500,d:'Sped.Copri #3'}],'2026-09-13':[{i:62,d:'ZonWizard'}],'2026-09-16':[{i:896,d:'IVA Q2/26'}],'2026-09-20':[{i:7035,d:'Saldo Tappeti #6'}],'2026-09-21':[{i:103,d:'Internet Mat-Ang'}],'2026-09-27':[{i:1000,d:'MAT-ANG'}],
         '2026-10-01':[{i:3015,d:'Acc.Tappeti #7'}],'2026-10-03':[{i:300,d:'Advigator'}],'2026-10-13':[{i:62,d:'ZonWizard'}],'2026-10-16':[{i:897,d:'IVA Q2/26'},{i:10500,d:'Sped.Tappeti #6'}],'2026-10-21':[{i:103,d:'Internet Mat-Ang'}],'2026-10-27':[{i:1000,d:'MAT-ANG'}],'2026-10-31':[{i:915,d:'Commercialista'}],
         '2026-11-03':[{i:300,d:'Advigator'}],'2026-11-13':[{i:62,d:'ZonWizard'}],'2026-11-14':[{i:610,d:'Trasp.Tappeti #6'}],'2026-11-16':[{i:650,d:'IVA Q3/26'},{i:915,d:'IVA Q2/26'}],'2026-11-21':[{i:103,d:'Internet Mat-Ang'}],'2026-11-27':[{i:1000,d:'MAT-ANG'}],'2026-11-30':[{i:582,d:'2° Acc.IRES'},{i:298,d:'Acc.IRAP'}],
-        '2026-12-03':[{i:300,d:'Advigator'}],'2026-12-13':[{i:62,d:'ZonWizard'}],'2026-12-16':[{i:660,d:'IVA Q3/26'},{i:916,d:'IVA Q2/26'}],'2026-12-21':[{i:103,d:'Internet Mat-Ang'}],'2026-12-27':[{i:1000,d:'MAT-ANG'}]
+        '2026-12-01':[{i:1600,d:'Acc.Copri #4 30%'}],'2026-12-03':[{i:300,d:'Advigator'},{i:3100,d:'Acc.Tappeti #8 30%'}],'2026-12-13':[{i:62,d:'ZonWizard'}],'2026-12-16':[{i:660,d:'IVA Q3/26'},{i:916,d:'IVA Q2/26'}],'2026-12-21':[{i:103,d:'Internet Mat-Ang'}],'2026-12-27':[{i:1000,d:'MAT-ANG'}]
     },
     rs: {'2026-05-15':{cT:1000},'2026-06-15':{cB:8000,cN:1500},'2026-06-25':{t:2140},'2026-08-25':{t:1600},'2026-09-19':{cB:4750,cN:2750,cT:2500},'2026-11-14':{t:1600}},
     rc: [{d:'2026-05-15',n:'Copri #2 Trasp',q:1000},{d:'2026-06-15',n:'Copri #2 B+N',q:9500},{d:'2026-06-25',n:'Tappeti #4',q:2140},{d:'2026-08-25',n:'Tappeti #5',q:1600},{d:'2026-09-19',n:'Copri #3',q:10000},{d:'2026-11-14',n:'Tappeti #6',q:1600}]
