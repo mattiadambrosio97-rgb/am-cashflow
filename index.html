@@ -479,7 +479,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
 <script>
 window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:16px;word-wrap:break-word">JS ERROR:\n'+m+'\nRiga: '+l+'\nCol: '+c+'\n\n'+(e&&e.stack?e.stack:'')+'</pre>';};
-const U = { data:'2026-05-12', previsto:{cassa:30871,amazon:11866,totale:42737}, reale:{cassa:29353,amazon:12996,totale:42349}, delta:-388, nota:'Agg. 12/05. Cassa Postale 29.353. Saldo Amazon 12.996 (13.296 - 300). Già pagato Acc.Copri #3 30% €1.558,55 (cambio 0,86, escluso da sp). Aggiunti Saldo Copri #3 70% €3.890 al 21/06 (cambio cautelativo 0,92) e Sped.Copri #3 €3.000 al 20/08. Nuovo restock 10.000 pz (4.750 B + 2.750 N + 2.500 T) in arrivo 19/09.' };
+const U = { data:'2026-05-12', previsto:{cassa:30871,amazon:11866,totale:42737}, reale:{cassa:29353,amazon:12996,totale:42349}, delta:-388, nota:'Agg. 12/05. Cassa Postale 29.353. Saldo Amazon 12.996 (13.296 - 300). Già pagato Acc.Copri #3 30% €1.558,55 (cambio 0,86, escluso da sp). Aggiunti Saldo Copri #3 70% €3.890 al 21/06 (cambio cautelativo 0,92) e Sped.Copri #3 €2.500 al 09/09. Nuovo restock 10.000 pz (4.750 B + 2.750 N + 2.500 T) in arrivo 19/09. Bonifici Amazon ogni 10 giorni a partire dal 20/05.' };
 const C = {
     start:'2026-05-12', end:'2026-12-31',
     init: { cassa:29353, amazon:12996, stock:{t:1104,cB:3522,cN:1651,cT:309,sN:184,sB:0,sG:0} },
@@ -514,7 +514,7 @@ const D = 86400000;
 function sim() {
     const {init:I,v,rn,sp,rs} = C;
     let ca=I.cassa,am=I.amazon,st={...I.stock};
-    const start=new Date(C.start),end=new Date(C.end),bS=new Date('2026-02-04');
+    const start=new Date(C.start),end=new Date(C.end),bS=new Date('2026-05-20');
     const rH=[]; for(let i=16;i>=1;i--)rH.push({d:new Date(start.getTime()-i*D),r:480});
     // Pre-scan IVA groups: find all IVA entries, group by label, calc totals
     const ivaGrp={};
@@ -547,7 +547,7 @@ function sim() {
         am+=ricLordo;rH.push({d:new Date(cur),r:ricLordo});
         am-=ppcConIva;ppcIvaAccum+=ppcDay*0.22;
         let bon=0;const dd=Math.floor((cur-bS)/D);
-        if(dd>=0&&dd%3===0){const tgt=new Date(cur.getTime()-18*D);for(const e of rH){if(e.d<=tgt&&e.r>0){bon+=e.r;e.r=0;}}if(bon>0&&am>=bon){am-=bon;ca+=bon;}else bon=0;}
+        if(dd>=0&&dd%10===0){const tgt=new Date(cur.getTime()-18*D);for(const e of rH){if(e.d<=tgt&&e.r>0){bon+=e.r;e.r=0;}}if(bon>0&&am>=bon){am-=bon;ca+=bon;}else bon=0;}
         let usc=0,ent=0;const det=[];
         if(cur.getDate()===1&&C.compenso>0){const comp=C.compenso*2;usc+=comp;ca-=comp;det.push('Compensi M+A');}
         const spese=sp[ds];
