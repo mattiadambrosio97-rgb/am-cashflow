@@ -475,7 +475,7 @@ function sim() {
         cur=new Date(cur.getTime()+D);
     }
     const last=data[data.length-1],li=I.cassa+I.amazon,sf=last.st,cm=C.cm;
-    const vm=sf.t*cm.t+(sf.cB+sf.cN+sf.cT)*cm.c+sf.sN*cm.s,mt=2140*cm.t;
+    const vm=sf.t*cm.t+(sf.cB+sf.cN+sf.cT)*cm.c+sf.sN*cm.s,mt=14750;
     return{data,s:{li,lf:last.tot,cMin:Math.min(...data.map(d=>d.ca)),cMax:Math.max(...data.map(d=>d.ca)),rTot:data.reduce((a,d)=>a+d.ric,0),sTot:data.reduce((a,d)=>a+d.usc,0),bTot:data.reduce((a,d)=>a+d.bon,0),sf,vr:last.tot-li,vm,mt,pt:last.tot+vm+mt,gc:{t:Math.floor(sf.t/v.t),cB:Math.floor(sf.cB/v.cB),cN:Math.floor(sf.cN/v.cN),cT:Math.floor(sf.cT/v.cT),sN:Math.floor(sf.sN/v.sN)}}};
 }
 
