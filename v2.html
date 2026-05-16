@@ -59,7 +59,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 .tbl-card { order: 6; }
 .restock-card { order: 7; }
 .rev-bar { order: 8; }
-.sim-card { order: 9; }
 .stock-section { order: 10; }
 .sum-grid { order: 11; }
 
@@ -93,36 +92,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 .rev-name { font-size: 12px; color: var(--text2); }
 .rev-val { font-size: 18px; font-weight: 700; }
 .rev-detail { font-size: 11px; color: var(--text3); }
-
-/* —— SIMULATOR —— */
-.sim-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r2); padding: 20px; margin-bottom: 20px; }
-.sim-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-.sim-sub { font-size: 11px; color: var(--text3); margin-bottom: 16px; }
-.sim-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
-.sim-row { display: flex; align-items: center; gap: 12px; background: var(--bg); border-radius: var(--r3); padding: 12px 14px; }
-.sim-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.sim-label { font-size: 12px; color: var(--text2); width: 80px; flex-shrink: 0; }
-.sim-slider { flex: 1; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; background: var(--border); outline: none; cursor: pointer; }
-.sim-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--blue); cursor: pointer; }
-.sim-slider::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--blue); border: none; cursor: pointer; }
-.sim-val { font-size: 15px; font-weight: 700; width: 36px; text-align: right; }
-.sim-ric { font-size: 11px; color: var(--text3); width: 70px; text-align: right; }
-.sim-total { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
-.sim-total-label { font-size: 13px; color: var(--text2); }
-.sim-total-val { font-size: 22px; font-weight: 800; color: var(--gold); }
-.sim-total-delta { font-size: 12px; margin-left: 10px; }
-.sim-actions { display: flex; gap: 10px; margin-top: 14px; }
-.sim-btn { background: var(--blue-bg); border: 1px solid var(--blue); color: var(--blue); padding: 8px 16px; border-radius: var(--r3); font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s; }
-.sim-btn:hover { background: var(--blue); color: #fff; }
-.sim-btn-reset { background: transparent; border: 1px solid var(--border); color: var(--text3); padding: 8px 16px; border-radius: var(--r3); font-size: 12px; font-family: inherit; cursor: pointer; }
-.sim-btn-reset:hover { border-color: var(--text2); color: var(--text2); }
-.sim-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 10px; margin-left: 10px; }
-.sim-sep { grid-column: 1 / -1; border-top: 1px solid var(--border); margin: 4px 0; }
-.sim-sep-label { grid-column: 1 / -1; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 0 2px; }
-.sim-compenso-preview { font-size: 12px; color: var(--text2); margin-top: 8px; padding: 10px 14px; background: var(--bg); border-radius: var(--r3); }
-.sim-input-row { display: grid; grid-template-columns: 120px 80px 1fr; align-items: center; gap: 8px; padding: 6px 0; }
-.sim-input-label { font-size: 13px; }
-.sim-input-result { font-size: 13px; color: var(--text2); text-align: right; }
 
 /* —— STOCK —— */
 .stock-section { margin-bottom: 20px; }
@@ -306,22 +275,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
     .rev-val { font-size: 18px; }
     .rev-detail { font-size: 12px; }
 
-    /* SIMULATORE — compatto */
-    .sim-card { padding: 12px; }
-    .sim-card h3 { font-size: 14px; }
-    .sim-sub { font-size: 12px; }
-    .sim-grid { grid-template-columns: 1fr; gap: 8px; }
-    .sim-total-label { font-size: 13px; }
-    .sim-total-val { font-size: 20px; }
-    .sim-total-delta { font-size: 12px; }
-    .sim-actions { flex-direction: column; gap: 6px; }
-    .sim-btn, .sim-btn-reset { width: 100%; text-align: center; padding: 10px; font-size: 13px; }
-
-    /* SIMULATORE INPUT ROWS — compatto */
-    .sim-input-row { grid-template-columns: 1fr 76px; gap: 4px; padding: 5px 0; }
-    .sim-input-label { font-size: 12px; }
-    .sim-input-result { font-size: 12px; grid-column: 1 / -1; text-align: left; padding-left: 2px; }
-
     /* STOCK (desktop) nascosto su mobile — c'e' la tabella mobile */
     .stock-section { display: none; }
 
@@ -366,21 +319,6 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
     <div class="rev-bar">
         <h3>💂 Ricavi Giornalieri</h3>
         <div class="rev-items" id="revItems"></div>
-    </div>
-
-    <!-- SIMULATOR -->
-    <div class="sim-card" id="simCard">
-        <h3>🎰️ Simulatore Vendite <span id="simBadge"></span></h3>
-        <div class="sim-sub">Muovi gli slider per simulare scenari diversi. Il dashboard si aggiorna in tempo reale.</div>
-        <div class="sim-grid" id="simGrid"></div>
-        <div class="sim-total">
-            <span class="sim-total-label">Netto giornaliero simulato</span>
-            <span><span class="sim-total-val" id="simTotalVal"></span><span class="sim-total-delta" id="simTotalDelta"></span></span>
-        </div>
-        <div class="sim-actions">
-            <button class="sim-btn" onclick="App.simApply()">Ricalcola Prospetto</button>
-            <button class="sim-btn-reset" onclick="App.simReset()">↺ Reset Originale</button>
-        </div>
     </div>
 
     <!-- STOCK -->
@@ -455,7 +393,7 @@ const C = {
     v: {t:22,cB:44,cN:12,cT:9,sN:6,sB:6,sG:3},
     rn: {t:15.63,c:3.90,s:10.76},
     cm: {t:8.54,s:7.93,c:0.79},
-    compenso: 0, ppc:{t:32,c:65,s:53}, altri:{t:0,c:0,s:0},
+    ppc:{t:32,c:65,s:53},
     sp: {
         '2026-05-18':[{i:2100,d:'IVA Q2/25',f:1},{i:400,d:'F24 Imp.Royalties'}],'2026-05-21':[{i:103,d:'Internet Mat-Ang'}],'2026-05-27':[{i:1000,d:'MAT-ANG'}],
         '2026-06-03':[{i:300,d:'Advigator'}],'2026-06-05':[{i:7035,d:'Saldo Tappeti #4'},{i:8300,d:'Sped.Tappeti #4'}],'2026-06-13':[{i:62,d:'ZonWizard'}],'2026-06-21':[{i:103,d:'Internet Mat-Ang'},{i:3890,d:'Saldo Copri #3 70%'}],'2026-06-25':[{i:610,d:'Trasp.Tappeti #4'}],'2026-06-27':[{i:1000,d:'MAT-ANG'}],'2026-06-29':[{i:1268,d:'Saldo IRES/IRAP 2025'}],'2026-06-30':[{i:389,d:'1° Acc.IRES'}],
@@ -518,7 +456,6 @@ function sim() {
         let bon=0;const dd=Math.floor((cur-bS)/D);
         if(dd>=0&&dd%10===0){const tgt=new Date(cur.getTime()-18*D);for(const e of rH){if(e.d<=tgt&&e.r>0){bon+=e.r;e.r=0;}}if(bon>0&&am>=bon){am-=bon;ca+=bon;}else bon=0;}
         let usc=0,ent=0;const det=[];
-        if(cur.getDate()===1&&C.compenso>0){const comp=C.compenso*2;usc+=comp;ca-=comp;det.push('Compensi M+A');}
         const spese=sp[ds];
         if(spese)for(const s of spese){
             let amt=s.i;
@@ -540,8 +477,6 @@ function sim() {
             det.push(s.d);
         }
         bon+=ent;
-        const altriDay=C.altri.t*vTp+C.altri.c*(vB+vN+vT)+C.altri.s*(sB+sN+sG);
-        if(altriDay>0){usc+=altriDay;ca-=altriDay;det.push('Altri Costi');}
         data.push({data:new Date(cur),ds,ca,am,tot:ca+am,ric,bon,usc,det:det.join(' · '),st:{...st}});
         cur=new Date(cur.getTime()+D);
     }
@@ -733,83 +668,6 @@ function renderSum(s) {
         </div>`;
 }
 
-const ORIG_V = {...C.v};
-const ORIG_RN = {...C.rn};
-const ORIG_COMPENSO = C.compenso;
-const ORIG_PPC = {...C.ppc};
-const ORIG_ALTRI = {...C.altri};
-
-const SIM_ITEMS = [
-    {key:'t', label:'Tappeti', color:'var(--green)', cat:'t', min:0, max:60},
-    {key:'cB', label:'Copri Bianchi', color:'var(--blue)', cat:'c', min:0, max:100},
-    {key:'cN', label:'Copri Neri', color:'var(--blue)', cat:'c', min:0, max:40},
-    {key:'cT', label:'Copri Trasp.', color:'var(--blue)', cat:'c', min:0, max:30},
-    {key:'sN', label:'Scarpe Nere', color:'var(--orange)', cat:'s', min:0, max:20},
-    {key:'sB', label:'Scarpe Bianche', color:'var(--orange)', cat:'s', min:0, max:20},
-    {key:'sG', label:'Scarpe Grigie', color:'var(--orange)', cat:'s', min:0, max:15}
-];
-function simPrice(it){return C.rn[it.cat];}
-
-function renderSim() {
-    const el=document.getElementById('simGrid');
-    const IS='background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px 10px;font-size:16px;font-weight:700;text-align:center;font-family:inherit;width:76px;min-height:44px;';
-    const cats=[
-        {id:'t',name:'🏽 Tappeti',items:[{key:'t',label:'Pz/giorno'}]},
-        {id:'c',name:'🔌 Copriprese',items:[{key:'cB',label:'Bianchi'},{key:'cN',label:'Neri'},{key:'cT',label:'Trasp.'}]},
-        {id:'s',name:'👟 Scarpiere',items:[{key:'sN',label:'Nere'},{key:'sB',label:'Bianche'},{key:'sG',label:'Grigie'}]}
-    ];
-    const row=(label,color,input,result)=>`<div class="sim-input-row"><span class="sim-input-label" style="color:${color||'var(--text2)'};font-weight:${color?'600':'400'}">${label}</span>${input}<span class="sim-input-result">${result}</span></div>`;
-    let h='';
-    cats.forEach(cat=>{
-        const rnVal=C.rn[cat.id], ppcVal=C.ppc[cat.id], altriVal=C.altri[cat.id];
-        const totPz=cat.items.reduce((a,it)=>a+C.v[it.key],0);
-        const ricGg=totPz*rnVal;
-        h+=`<div style="background:var(--bg);border-radius:var(--r3);padding:16px;margin-bottom:6px">
-            <div style="font-weight:700;font-size:16px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)">${cat.name} <span id="sr_rn_${cat.id}" style="font-size:13px;font-weight:400;color:var(--text2);float:right">Tot €${f(ricGg)}/gg</span></div>`;
-        h+=row('Ritorno €/pz','var(--green)',`<input type="number" min="0" max="99" step="0.01" value="${rnVal}" data-key="${cat.id}" oninput="App.simRnUpdate(this)" style="${IS}">`,'');
-        cat.items.forEach(it=>{
-            const val=C.v[it.key], ric=val*rnVal;
-            h+=row(it.label+'  /gg','',`<input type="number" min="0" max="200" value="${val}" data-key="${it.key}" oninput="App.simUpdate(this)" style="${IS}">`,`<span id="sr_${it.key}">€${f(ric)}</span>`);
-        });
-        h+=`<div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px"></div>`;
-        h+=row('PPC €/gg','var(--red)',`<input type="number" min="0" max="999" step="0.5" value="${ppcVal}" data-key="${cat.id}" oninput="App.simPpcUpdate(this)" style="${IS}">`,`<span id="sr_ppc_${cat.id}" style="color:var(--text3)">= €${f(ppcVal*1.22)} +IVA</span>`);
-        h+=row('Altri €/pz','var(--purple)',`<input type="number" min="0" max="50" step="0.1" value="${altriVal}" data-key="${cat.id}" oninput="App.simAltriUpdate(this)" style="${IS}">`,`<span id="sr_altri_${cat.id}" style="color:var(--text3)">= €${f(altriVal*totPz)}/gg</span>`);
-        h+=`</div>`;
-    });
-    h+=`<div style="background:var(--bg);border-radius:var(--r3);padding:16px;margin-bottom:6px">
-        <div style="font-weight:700;font-size:16px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)">Costi Fissi</div>`;
-    h+=row('Compenso M+A','var(--red)',`<input type="number" min="0" max="5000" step="50" value="${C.compenso}" oninput="App.simCompUpdate(this)" style="${IS}">`,`<span id="sr_comp">€${f(C.compenso*2)}/mese</span>`);
-    h+=`</div>`;
-    el.innerHTML = h;
-    updateSimTotal();
-}
-
-function updateSimTotal() {
-    let tot=0, origTot=0;
-    SIM_ITEMS.forEach(it=>{
-        tot += C.v[it.key] * simPrice(it);
-        origTot += ORIG_V[it.key] * simPrice(it);
-    });
-    const ppcTot=C.ppc.t+C.ppc.c+C.ppc.s, origPpc=ORIG_PPC.t+ORIG_PPC.c+ORIG_PPC.s;
-    const pzT=C.v.t, pzC=C.v.cB+C.v.cN+C.v.cT, pzS=C.v.sN+C.v.sB+C.v.sG;
-    const altriTot=C.altri.t*pzT+C.altri.c*pzC+C.altri.s*pzS;
-    const oPzT=ORIG_V.t, oPzC=ORIG_V.cB+ORIG_V.cN+ORIG_V.cT, oPzS=ORIG_V.sN+ORIG_V.sB+ORIG_V.sG;
-    const origAltri=ORIG_ALTRI.t*oPzT+ORIG_ALTRI.c*oPzC+ORIG_ALTRI.s*oPzS;
-    tot -= ppcTot*1.22 + altriTot;
-    origTot -= origPpc*1.22 + origAltri;
-    document.getElementById('simTotalVal').textContent = '€'+f(tot);
-    const diff = tot - origTot;
-    const de = document.getElementById('simTotalDelta');
-    if(Math.abs(diff) < 0.01) { de.textContent=''; }
-    else {
-        const pct = origTot!==0?((diff/Math.abs(origTot))*100).toFixed(0):'∞';
-        de.innerHTML = `<span class="${diff>0?'t-pos':'t-neg'}">${diff>0?'+':''}€${f(diff)} (${diff>0?'+':''}${pct}%)</span>`;
-    }
-    const badge = document.getElementById('simBadge');
-    const changed = SIM_ITEMS.some(it=>C.v[it.key]!==ORIG_V[it.key]) || C.compenso!==ORIG_COMPENSO || C.ppc.t!==ORIG_PPC.t||C.ppc.c!==ORIG_PPC.c||C.ppc.s!==ORIG_PPC.s || C.altri.t!==ORIG_ALTRI.t||C.altri.c!==ORIG_ALTRI.c||C.altri.s!==ORIG_ALTRI.s || C.rn.t!==ORIG_RN.t||C.rn.c!==ORIG_RN.c||C.rn.s!==ORIG_RN.s;
-    badge.innerHTML = changed ? '<span class="sim-badge" style="background:var(--orange-bg);color:var(--orange)">MODIFICATO</span>' : '';
-}
-
 function renderRevBar() {
     const v=C.v, rn=C.rn, cm=C.cm;
     const pzT=v.t, pzC=v.cB+v.cN+v.cT, pzS=v.sN+v.sB+v.sG;
@@ -997,7 +855,7 @@ const App={
         try{
         const{data,s}=sim();this.allData=data;this.s=s;
         const{data:snapData}=simSnap();this.snapMap={};for(const d of snapData)this.snapMap[d.ds]=d;
-        renderKPI(s);renderSim();renderRevBar();renderStock(s);renderSum(s);renderChart(data,this.snapMap);
+        renderKPI(s);renderRevBar();renderStock(s);renderSum(s);renderChart(data,this.snapMap);
         this.applyZoom();
         this.applyStockZoom();
         }catch(e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:14px">ERRORE: '+e.message+'\n\n'+e.stack+'</pre>';}
@@ -1043,60 +901,6 @@ const App={
         try{localStorage.setItem('cf-theme', this.theme)}catch(e){}
         renderChart(this.allData,this.snapMap);
     },
-    simUpdate(el){
-        const key=el.dataset.key, val=parseInt(el.value)||0;
-        C.v[key]=val;
-        const it=SIM_ITEMS.find(i=>i.key===key);
-        document.getElementById('sr_'+key).textContent='€'+f(val*simPrice(it));
-        updateSimTotal();
-        renderRevBar();
-    },
-    simCompUpdate(el){
-        const val=parseInt(el.value)||0;
-        C.compenso=val;
-        document.getElementById('sr_comp').textContent='€'+f(val*2)+'/mese';
-        updateSimTotal();
-    },
-    simApply(){
-        const{data,s}=sim();this.allData=data;this.s=s;
-        renderKPI(s);renderStock(s);renderSum(s);renderChart(data,this.snapMap);
-        this.applyZoom();
-        this.applyStockZoom();
-    },
-    simPpcUpdate(el){
-        const key=el.dataset.key, val=parseFloat(el.value)||0;
-        C.ppc[key]=val;
-        document.getElementById('sr_ppc_'+key).innerHTML='€'+f(val*1.22)+'/gg <small style="color:var(--text3)">(+IVA)</small>';
-        updateSimTotal();
-    },
-    simAltriUpdate(el){
-        const key=el.dataset.key, val=parseFloat(el.value)||0;
-        C.altri[key]=val;
-        const pz=key==='t'?C.v.t:key==='c'?(C.v.cB+C.v.cN+C.v.cT):(C.v.sN+C.v.sB+C.v.sG);
-        document.getElementById('sr_altri_'+key).textContent='€'+f(val*pz)+'/gg';
-        updateSimTotal();
-    },
-    simRnUpdate(el){
-        const key=el.dataset.key, val=parseFloat(el.value)||0;
-        C.rn[key]=val;
-        const totPz=key==='t'?C.v.t:key==='c'?(C.v.cB+C.v.cN+C.v.cT):(C.v.sN+C.v.sB+C.v.sG);
-        document.getElementById('sr_rn_'+key).innerHTML='Tot €'+f(val*totPz)+'/gg';
-        SIM_ITEMS.filter(i=>i.cat===key).forEach(i=>{
-            document.getElementById('sr_'+i.key).textContent='€'+f(C.v[i.key]*val);
-        });
-        updateSimTotal();
-        renderRevBar();
-    },
-    simReset(){
-        Object.assign(C.v, ORIG_V);
-        C.compenso=ORIG_COMPENSO;
-        C.ppc={...ORIG_PPC};
-        C.altri={...ORIG_ALTRI};
-        C.rn={...ORIG_RN};
-        renderSim();
-        renderRevBar();
-        this.simApply();
-    }
 };
 document.addEventListener('DOMContentLoaded',function(){App.init();});
 </script>
