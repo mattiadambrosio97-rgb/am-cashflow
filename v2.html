@@ -340,7 +340,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
         <div class="tbl-hdr"><h3>📋 Dettaglio</h3><span class="tbl-count" id="tblCount"></span></div>
         <div class="tbl-scroll"><table><thead><tr>
             <th style="text-align:left">Data</th><th>Cassa</th><th>Amazon</th><th>Totale</th><th>Ricavi</th><th>Bonifici</th><th>Uscite</th><th style="text-align:left">Dettaglio</th>
-            <th>Tap</th><th>CB</th><th>CN</th><th>CT</th><th>SN</th><th>SB</th><th>SG</th>
+            <th>Tap</th><th>CB</th><th>CN</th><th>CT</th><th>SN</th>
         </tr></thead><tbody id="tblBody"></tbody></table></div>
     </div>
     <!-- MOBILE -->
@@ -389,8 +389,8 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:16px;word-wrap:break-word">JS ERROR:\n'+m+'\nRiga: '+l+'\nCol: '+c+'\n\n'+(e&&e.stack?e.stack:'')+'</pre>';};
 const C = {
     start:'2026-05-16', end:'2026-12-31',
-    init: { cassa:35431, amazon:9434, stock:{t:1021,cB:3296,cN:1578,cT:993,sN:92,sB:0,sG:0} },
-    v: {t:22,cB:44,cN:12,cT:9,sN:6,sB:6,sG:3},
+    init: { cassa:35431, amazon:9434, stock:{t:1021,cB:3296,cN:1578,cT:993,sN:92} },
+    v: {t:22,cB:44,cN:12,cT:9,sN:6},
     rn: {t:15.63,c:3.90,s:10.76},
     cm: {t:8.54,s:7.93,c:0.79},
     ppc:{t:32,c:65,s:53},
@@ -411,7 +411,7 @@ const C = {
 // Snapshot frozen al 12/05/2026 — NON MODIFICARE MAI
 const C0 = {
     start:'2026-05-12',
-    init:{ cassa:29353, amazon:12996, stock:{t:1104,cB:3522,cN:1651,cT:309,sN:184,sB:0,sG:0} }
+    init:{ cassa:29353, amazon:12996, stock:{t:1104,cB:3522,cN:1651,cT:309,sN:184} }
 };
 
 const f = n => n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -441,14 +441,8 @@ function sim() {
         const vB=Math.min(v.cB,st.cB),vN=Math.min(v.cN,st.cN),vT=Math.min(v.cT,st.cT);
         st.cB-=vB;st.cN-=vN;st.cT-=vT;
         const vTp=Math.min(v.t,st.t);st.t-=vTp;
-        let pB=v.sB,pN=v.sN,pG=v.sG;
-        const bO=st.sB===0,nO=st.sN===0,gO=st.sG===0;
-        if(bO){const e=v.sB*.25;if(!nO&&!gO){pN+=e*6/9;pG+=e*3/9;}else if(!nO)pN+=e;else if(!gO)pG+=e;pB=0;}
-        if(gO&&!bO){const e=v.sG*.25;if(!bO&&!nO){pB+=e*.5;pN+=e*.5;}else if(!nO)pN+=e;else if(!bO)pB+=e;pG=0;}
-        if(nO&&!bO){const e=v.sN*.25;if(!bO&&!gO){pB+=e*6/9;pG+=e*3/9;}else if(!gO)pG+=e;else if(!bO)pB+=e;pN=0;}
-        const sB=Math.min(Math.round(pB),st.sB),sN=Math.min(Math.round(pN),st.sN),sG=Math.min(Math.round(pG),st.sG);
-        st.sB-=sB;st.sN-=sN;st.sG-=sG;
-        const ricLordo=vTp*rn.t+(vB+vN+vT)*rn.c+(sB+sN+sG)*rn.s;
+        const sN=Math.min(v.sN,st.sN);st.sN-=sN;
+        const ricLordo=vTp*rn.t+(vB+vN+vT)*rn.c+sN*rn.s;
         const ppcDay=C.ppc.t+C.ppc.c+C.ppc.s;const ppcConIva=ppcDay*1.22;
         const ric=ricLordo-ppcConIva;
         am+=ricLordo;rH.push({d:new Date(cur),r:ricLordo});
@@ -481,8 +475,8 @@ function sim() {
         cur=new Date(cur.getTime()+D);
     }
     const last=data[data.length-1],li=I.cassa+I.amazon,sf=last.st,cm=C.cm;
-    const vm=sf.t*cm.t+(sf.cB+sf.cN+sf.cT)*cm.c+(sf.sN+sf.sB+sf.sG)*cm.s,mt=2140*cm.t;
-    return{data,s:{li,lf:last.tot,cMin:Math.min(...data.map(d=>d.ca)),cMax:Math.max(...data.map(d=>d.ca)),rTot:data.reduce((a,d)=>a+d.ric,0),sTot:data.reduce((a,d)=>a+d.usc,0),bTot:data.reduce((a,d)=>a+d.bon,0),sf,vr:last.tot-li,vm,mt,pt:last.tot+vm+mt,gc:{t:Math.floor(sf.t/v.t),cB:Math.floor(sf.cB/v.cB),cN:Math.floor(sf.cN/v.cN),cT:Math.floor(sf.cT/v.cT),sN:Math.floor(sf.sN/v.sN),sB:Math.floor(sf.sB/v.sB),sG:Math.floor(sf.sG/v.sG)}}};
+    const vm=sf.t*cm.t+(sf.cB+sf.cN+sf.cT)*cm.c+sf.sN*cm.s,mt=2140*cm.t;
+    return{data,s:{li,lf:last.tot,cMin:Math.min(...data.map(d=>d.ca)),cMax:Math.max(...data.map(d=>d.ca)),rTot:data.reduce((a,d)=>a+d.ric,0),sTot:data.reduce((a,d)=>a+d.usc,0),bTot:data.reduce((a,d)=>a+d.bon,0),sf,vr:last.tot-li,vm,mt,pt:last.tot+vm+mt,gc:{t:Math.floor(sf.t/v.t),cB:Math.floor(sf.cB/v.cB),cN:Math.floor(sf.cN/v.cN),cT:Math.floor(sf.cT/v.cT),sN:Math.floor(sf.sN/v.sN)}}};
 }
 
 function simSnap(){
@@ -514,7 +508,7 @@ function renderStock(s) {
     el.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:12px">
         ${grp('🏽','Tappeti',item('',sf.t,gc.t))}
         ${grp('🔌','Copriprese',item('B',sf.cB,gc.cB)+item('N',sf.cN,gc.cN)+item('T',sf.cT,gc.cT))}
-        ${grp('👟','Scarpiere',item('N',sf.sN,gc.sN)+item('B',sf.sB,gc.sB)+item('G',sf.sG,gc.sG))}
+        ${grp('👟','Scarpiere',item('N',sf.sN,gc.sN))}
     </div>`;
 }
 
@@ -523,11 +517,11 @@ function renderTable(data) {
     const ss=(v,l,c)=>v===0||v<c?'cr':v<l?'lo':'ok';
     const sc=(v,l,c)=>`<td><span class="sdot sdot-${ss(v,l,c)}"></span>${v}</td>`;
     const ab=ds=>{const a=C.rc.filter(r=>r.d===ds);return a.length?a.map(x=>`<span class="tag tag-restock">📦 ${x.n}</span>`).join(' '):'';}
-    let h=`<tr class="row-good"><td>12/05</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td><td>${s.sB}</td><td>${s.sG}</td></tr>`;
+    let h=`<tr class="row-good"><td>12/05</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td></tr>`;
     for(const d of data){
         const rc=d.ca<0?'row-bad':d.ca<3000?'row-warn':d.bon>0?'row-good':'';
         const b=ab(d.ds),det=b?(b+(d.det?' · '+d.det:'')):d.det,k=d.st;
-        h+=`<tr class="${rc}"><td>${fD(d.data)}</td><td class="${d.ca<0?'t-neg':''}">${f(d.ca)}</td><td>${f(d.am)}</td><td class="t-bold">${f(d.tot)}</td><td class="t-pos">${d.ric>0?'+'+f(d.ric):''}</td><td class="t-pos">${d.bon>0?'+'+f(d.bon):''}</td><td class="t-neg">${d.usc>0?'-'+f(d.usc):''}</td><td>${det}</td>${sc(k.t,200,50)}${sc(k.cB,500,100)}${sc(k.cN,200,50)}${sc(k.cT,100,30)}${sc(k.sN,200,50)}${sc(k.sB,100,30)}${sc(k.sG,100,30)}</tr>`;
+        h+=`<tr class="${rc}"><td>${fD(d.data)}</td><td class="${d.ca<0?'t-neg':''}">${f(d.ca)}</td><td>${f(d.am)}</td><td class="t-bold">${f(d.tot)}</td><td class="t-pos">${d.ric>0?'+'+f(d.ric):''}</td><td class="t-pos">${d.bon>0?'+'+f(d.bon):''}</td><td class="t-neg">${d.usc>0?'-'+f(d.usc):''}</td><td>${det}</td>${sc(k.t,200,50)}${sc(k.cB,500,100)}${sc(k.cN,200,50)}${sc(k.cT,100,30)}${sc(k.sN,200,50)}</tr>`;
     }
     tb.innerHTML=h;
     document.getElementById('tblCount').textContent=data.length+' giorni';
@@ -610,7 +604,7 @@ function renderMobileStock(allData, days) {
         let prev=C.init.stock;
         for(const d of allData){
             const isRs=C.rc.some(r=>r.d===d.ds);
-            const changed=d.st.t!==prev.t||d.st.cB!==prev.cB||d.st.sN!==prev.sN||d.st.sB!==prev.sB;
+            const changed=d.st.t!==prev.t||d.st.cB!==prev.cB||d.st.sN!==prev.sN;
             if(isRs||changed){
                 stockDates.push({lbl:d.data.getDate()+'/'+(d.data.getMonth()+1),st:d.st,rs:isRs});
                 prev=d.st;
@@ -631,7 +625,7 @@ function renderMobileStock(allData, days) {
         const s=sd.st;
         const gt=Math.floor(s.t/v.t);
         const totC=s.cB+s.cN+s.cT, gcMin=Math.min(Math.floor(s.cB/v.cB),Math.floor(s.cN/v.cN),Math.floor(s.cT/v.cT));
-        const totS=s.sN+s.sB+s.sG, gsMin=Math.min(Math.floor(s.sN/v.sN),v.sB>0?Math.floor(s.sB/v.sB):999,v.sG>0?Math.floor(s.sG/v.sG):999);
+        const totS=s.sN, gsMin=Math.floor(s.sN/v.sN);
         const pill=(val,g)=>{
             let out=`<span class="sdot ${ggC(g)}"></span>${val.toLocaleString()}`;
             if(showGg) out+=`<span class="mc-stock-gg" style="color:var(${g<=0?'--red':g<150?'--orange':'--green'})">${ggT(g)}</span>`;
@@ -670,7 +664,7 @@ function renderSum(s) {
 
 function renderRevBar() {
     const v=C.v, rn=C.rn, cm=C.cm;
-    const pzT=v.t, pzC=v.cB+v.cN+v.cT, pzS=v.sN+v.sB+v.sG;
+    const pzT=v.t, pzC=v.cB+v.cN+v.cT, pzS=v.sN;
     const rT=pzT*rn.t, rC=pzC*rn.c, rS=pzS*rn.s, tot=rT+rC+rS;
     const mT=rn.t-cm.t, mC=rn.c-cm.c, mS=rn.s-cm.s;
     const mpT=((mT/rn.t)*100).toFixed(0), mpC=((mC/rn.c)*100).toFixed(0), mpS=rn.s>0?((mS/rn.s)*100).toFixed(0):'0';
@@ -823,17 +817,17 @@ function renderTableZoom(data, days) {
     let h='';
     if(days===1){
         const ab=ds=>{const a=C.rc.filter(r=>r.d===ds);return a.length?a.map(x=>`<span class="tag tag-restock">📦 ${x.n}</span>`).join(' '):'';}
-        h+=`<tr class="row-good"><td>12/05</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td><td>${s.sB}</td><td>${s.sG}</td></tr>`;
+        h+=`<tr class="row-good"><td>12/05</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td></tr>`;
         for(const d of data){
             const rc=d.ca<0?'row-bad':d.ca<3000?'row-warn':d.bon>0?'row-good':'';
             const b=ab(d.ds),det=b?(b+(d.det?' · '+d.det:'')):d.det,k=d.st;
-            h+=`<tr class="${rc}"><td>${fD(d.data)}</td><td class="${d.ca<0?'t-neg':''}">${f(d.ca)}</td><td>${f(d.am)}</td><td class="t-bold">${f(d.tot)}</td><td class="t-pos">${d.ric>0?'+'+f(d.ric):''}</td><td class="t-pos">${d.bon>0?'+'+f(d.bon):''}</td><td class="t-neg">${d.usc>0?'-'+f(d.usc):''}</td><td>${det}</td>${sc(k.t,200,50)}${sc(k.cB,500,100)}${sc(k.cN,200,50)}${sc(k.cT,100,30)}${sc(k.sN,200,50)}${sc(k.sB,100,30)}${sc(k.sG,100,30)}</tr>`;
+            h+=`<tr class="${rc}"><td>${fD(d.data)}</td><td class="${d.ca<0?'t-neg':''}">${f(d.ca)}</td><td>${f(d.am)}</td><td class="t-bold">${f(d.tot)}</td><td class="t-pos">${d.ric>0?'+'+f(d.ric):''}</td><td class="t-pos">${d.bon>0?'+'+f(d.bon):''}</td><td class="t-neg">${d.usc>0?'-'+f(d.usc):''}</td><td>${det}</td>${sc(k.t,200,50)}${sc(k.cB,500,100)}${sc(k.cN,200,50)}${sc(k.cT,100,30)}${sc(k.sN,200,50)}</tr>`;
         }
     } else {
         for(const d of data){
             const rc=d.ca<0?'row-bad':d.ca<3000?'row-warn':d.bon>0?'row-good':'';
             const k=d.st;
-            h+=`<tr class="${rc}"><td>${d.label}</td><td class="${d.ca<0?'t-neg':''}">${f(d.ca)}</td><td>${f(d.am)}</td><td class="t-bold">${f(d.tot)}</td><td class="t-pos">${d.ric>0?'+'+f(d.ric):''}</td><td class="t-pos">${d.bon>0?'+'+f(d.bon):''}</td><td class="t-neg">${d.usc>0?'-'+f(d.usc):''}</td><td style="font-size:9px">${d.det.length>60?d.det.slice(0,60)+'…':d.det}</td>${sc(k.t,200,50)}${sc(k.cB,500,100)}${sc(k.cN,200,50)}${sc(k.cT,100,30)}${sc(k.sN,200,50)}${sc(k.sB,100,30)}${sc(k.sG,100,30)}</tr>`;
+            h+=`<tr class="${rc}"><td>${d.label}</td><td class="${d.ca<0?'t-neg':''}">${f(d.ca)}</td><td>${f(d.am)}</td><td class="t-bold">${f(d.tot)}</td><td class="t-pos">${d.ric>0?'+'+f(d.ric):''}</td><td class="t-pos">${d.bon>0?'+'+f(d.bon):''}</td><td class="t-neg">${d.usc>0?'-'+f(d.usc):''}</td><td style="font-size:9px">${d.det.length>60?d.det.slice(0,60)+'…':d.det}</td>${sc(k.t,200,50)}${sc(k.cB,500,100)}${sc(k.cN,200,50)}${sc(k.cT,100,30)}${sc(k.sN,200,50)}</tr>`;
         }
     }
     tb.innerHTML=h;
