@@ -390,10 +390,18 @@ window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:re
 const C = {
     start:'2026-05-21', end:'2026-12-31',
     init: { cassa:31656, amazon:13966, stock:{t:930,cB:3034,cN:1467,cT:1168} },
-    v: {t:22,cB:44,cN:12,cT:9},
-    rn: {t:15.63,c:3.90},
-    cm: {t:8.54,c:0.79},
-    ppc:{t:32,c:65},
+    v: {t:22,cB:44,cN:14,cT:11},
+    // rn = cash netto per pezzo IVA incl, gia tolto Amazon fee + corriere + Gennaro (PPC tolto a parte)
+    rn: {t:13.91,c:3.88},
+    cm: {t:8.54,c:0.81},
+    ppc:{t:32,c:62},
+    // Parametri economici dettagliati (riferimento, non usato dal motore):
+    eco: {
+        tappeti: {prezzoIvaIncl:25.99, amazonFee:3.90, corriere:5.00, gennaro:1.00, ppcGgNetto:32, cmIvaIncl:8.54, ivaCM:'inclusa'},
+        copri:   {prezzoIvaIncl:7.94,  amazonFee:0.64, corriere:2.69, gennaro:0,    ppcGgNetto:62, cmIvaIncl:0.81, ivaCM:'inclusa'},
+        cashRecuperatoGg: 458.90,  // tappeti 267 + copri 191,90 = cassa che rientra giornalmente (pre-CM, pre-costi fissi, pre-tasse)
+        note: 'CM si paga separatamente via acconti/saldi/spedizioni a calendario (vedi sp). Non sottrarlo dal cash giornaliero o conteggio doppio.'
+    },
     sp: {
         '2026-05-27':[{i:1000,d:'MAT-ANG'}],
         '2026-06-03':[{i:300,d:'Advigator'}],'2026-06-05':[{i:7035,d:'Saldo Tappeti #4'}],'2026-06-13':[{i:62,d:'ZonWizard'}],'2026-06-20':[{i:8300,d:'Sped.Tappeti #4'}],'2026-06-21':[{i:103,d:'Internet Mat-Ang'},{i:3890,d:'Saldo Copri #3 70%'}],'2026-06-25':[{i:610,d:'Trasp.Tappeti #4'}],'2026-06-27':[{i:1000,d:'MAT-ANG'}],'2026-06-29':[{i:1268,d:'Saldo IRES/IRAP 2025'}],'2026-06-30':[{i:389,d:'1° Acc.IRES'}],
@@ -488,9 +496,12 @@ function simSnap(){
 
 function renderKPI(s) {
     const el=document.getElementById('kpiStrip');
+    const v=C.v,rn=C.rn,ppc=C.ppc;
+    const cashGg=(v.t*rn.t+(v.cB+v.cN+v.cT)*rn.c)-(ppc.t+ppc.c)*1.22;
     const items = [
         {l:'Liquidità Oggi',v:`€${f(s.li)}`,c:'--blue'},
         {l:'Liquidità 31/12',v:`€${f(s.lf)}`,c:'--green'},
+        {l:'Cassa Recup./gg',v:`€${f(cashGg)}`,c:'--orange'},
         {l:'Cassa Minima',v:`€${f(s.cMin)}`,c:s.cMin<3000?'--red':'--green'},
         {l:'Variazione',v:`${s.vr>=0?'+':''}€${f(s.vr)}`,c:s.vr>=0?'--green':'--red'},
         {l:'Patrimonio Totale',v:`€${f(s.pt)}`,c:'--gold'}
@@ -659,16 +670,15 @@ function renderSum(s) {
 }
 
 function renderRevBar() {
-    const v=C.v, rn=C.rn, cm=C.cm;
+    const v=C.v, rn=C.rn, ppc=C.ppc;
     const pzT=v.t, pzC=v.cB+v.cN+v.cT;
     const rT=pzT*rn.t, rC=pzC*rn.c, tot=rT+rC;
-    const mT=rn.t-cm.t, mC=rn.c-cm.c;
-    const mpT=((mT/rn.t)*100).toFixed(0), mpC=((mC/rn.c)*100).toFixed(0);
-    const margTot=pzT*mT+pzC*mC;
+    const ppcIvaIncl=(ppc.t+ppc.c)*1.22;
+    const cashRec=tot-ppcIvaIncl;
     document.getElementById('revItems').innerHTML = `
-        <div class="rev-item"><div class="rev-dot" style="background:var(--green)"></div><div class="rev-info"><div class="rev-name">Tappeti</div><div class="rev-val">€${f(rT)}</div><div class="rev-detail">${pzT} pz/gg × €${f(rn.t)} · margine €${f(mT)} (${mpT}%)</div></div></div>
-        <div class="rev-item"><div class="rev-dot" style="background:var(--blue)"></div><div class="rev-info"><div class="rev-name">Copriprese</div><div class="rev-val">€${f(rC)}</div><div class="rev-detail">${pzC} pz/gg × €${f(rn.c)} · margine €${f(mC)} (${mpC}%)</div></div></div>
-        <div class="rev-item"><div class="rev-dot" style="background:var(--purple)"></div><div class="rev-info"><div class="rev-name">TOTALE</div><div class="rev-val" style="color:var(--gold)">€${f(tot)}</div><div class="rev-detail">${pzT+pzC} pz/gg · margine €${f(margTot)}/gg</div></div></div>`;
+        <div class="rev-item"><div class="rev-dot" style="background:var(--green)"></div><div class="rev-info"><div class="rev-name">Tappeti</div><div class="rev-val">€${f(rT)}</div><div class="rev-detail">${pzT} pz/gg × €${f(rn.t)} cash/pz IVA incl</div></div></div>
+        <div class="rev-item"><div class="rev-dot" style="background:var(--blue)"></div><div class="rev-info"><div class="rev-name">Copriprese</div><div class="rev-val">€${f(rC)}</div><div class="rev-detail">${pzC} pz/gg (B${v.cB}+N${v.cN}+T${v.cT}) × €${f(rn.c)} cash/pz</div></div></div>
+        <div class="rev-item"><div class="rev-dot" style="background:var(--purple)"></div><div class="rev-info"><div class="rev-name">CASSA RECUP./GG</div><div class="rev-val" style="color:var(--gold)">€${f(cashRec)}</div><div class="rev-detail">${pzT+pzC} pz/gg · ricavo €${f(tot)} - PPC €${f(ppcIvaIncl)}</div></div></div>`;
 }
 
 function getCSS(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
