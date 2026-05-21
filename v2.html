@@ -517,7 +517,7 @@ function renderTable(data) {
     const ss=(v,l,c)=>v===0||v<c?'cr':v<l?'lo':'ok';
     const sc=(v,l,c)=>`<td><span class="sdot sdot-${ss(v,l,c)}"></span>${v}</td>`;
     const ab=ds=>{const a=C.rc.filter(r=>r.d===ds);return a.length?a.map(x=>`<span class="tag tag-restock">📦 ${x.n}</span>`).join(' '):'';}
-    let h=`<tr class="row-good"><td>12/05</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td></tr>`;
+    let h=`<tr class="row-good"><td>21/05</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td><td>${s.sN}</td></tr>`;
     for(const d of data){
         const rc=d.ca<0?'row-bad':d.ca<3000?'row-warn':d.bon>0?'row-good':'';
         const b=ab(d.ds),det=b?(b+(d.det?' · '+d.det:'')):d.det,k=d.st;
@@ -538,7 +538,7 @@ function renderMobileFlows(data, days) {
         <colgroup><col class="mc-col-date"><col class="mc-col-in"><col class="mc-col-out"><col class="mc-col-tot"></colgroup>
         <thead><tr><th>Data</th><th>Entrate</th><th>Uscite</th><th>Liquidità</th></tr></thead><tbody>`;
 
-    h+=`<tr class="mc-init"><td>12/05</td><td style="color:var(--text3)">—</td><td style="color:var(--text3)">—</td><td>€${f(C.init.cassa+C.init.amazon)}</td></tr>`;
+    h+=`<tr class="mc-init"><td>21/05</td><td style="color:var(--text3)">—</td><td style="color:var(--text3)">—</td><td>€${f(C.init.cassa+C.init.amazon)}</td></tr>`;
 
     for(const d of imp){
         const rc=d.ca<0?'mc-bad':d.ca<3000?'mc-warn':d.bon>0?'mc-ok':'';
@@ -572,7 +572,7 @@ function renderMobileStock(allData, days) {
     const mesi=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
 
     const stockDates=[];
-    stockDates.push({lbl:'12/05',st:C.init.stock,rs:false});
+    stockDates.push({lbl:'21/05',st:C.init.stock,rs:false});
 
     if(isMonth){
         let lm=-1;
