@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AM Group — Cash Flow 2026 v3</title>
+<title>AM Group - Cash Flow 2026-2027 v3</title>
 <style>
 * { font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 :root, [data-theme="dark"] {
@@ -323,7 +323,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
     <!-- STOCK -->
     <div class="stock-section">
-        <h3>📦 Stock al 31/12/2026</h3>
+        <h3>📦 Stock al 30/04/2027</h3>
         <div class="stock-grid" id="stockGrid"></div>
     </div>
 
@@ -377,9 +377,9 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
         </div>
     </div>
 
-    <!-- USCITE 2027 (pianificate, fuori dal modello simulato) -->
+    <!-- USCITE 2027 (simulate fino al 30/04/27, eventi post-modello dopo) -->
     <div class="restock-card">
-        <h3 style="color:var(--orange)">💸 Uscite Pianificate 2027 (non simulate)</h3>
+        <h3 style="color:var(--orange)">💸 Uscite Restock 2027 (gen-apr simulate, mag fuori modello)</h3>
         <div id="restockList">
             <div class="restock-item"><span class="restock-date" style="color:var(--orange)">04/01/27</span><span class="restock-name">Sped.Tappeti #7</span><span class="restock-qty t-neg">-€10.500</span></div>
             <div class="restock-item"><span class="restock-date" style="color:var(--orange)">08/02/27</span><span class="restock-name">Trasp.Tappeti #7</span><span class="restock-qty t-neg">-€610</span></div>
@@ -406,7 +406,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 <script>
 window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:16px;word-wrap:break-word">JS ERROR:\n'+m+'\nRiga: '+l+'\nCol: '+c+'\n\n'+(e&&e.stack?e.stack:'')+'</pre>';};
 const C = {
-    start:'2026-05-21', end:'2026-12-31',
+    start:'2026-05-21', end:'2027-04-30',
     init: { cassa:31656, amazon:13966, stock:{t:930,cB:3034,cN:1467,cT:1168} },
     v: {t:22,cB:44,cN:14,cT:11},
     // rn = cash netto per pezzo IVA incl, gia tolto Amazon fee + corriere + Gennaro (PPC tolto a parte)
@@ -428,12 +428,16 @@ const C = {
         '2026-09-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2026-09-05':[{i:10500,d:'Sped.Tappeti #5'}],'2026-09-09':[{i:2500,d:'Sped.Copri #3'}],'2026-09-13':[{i:62,d:'ZonWizard'}],'2026-09-15':[{i:610,d:'Trasp.Tappeti #5'}],'2026-09-20':[{i:7035,d:'Saldo Tappeti #6'}],'2026-09-21':[{i:103,d:'Internet Mat-Ang'}],'2026-09-27':[{i:1000,d:'MAT-ANG'}],
         '2026-10-01':[{i:3015,d:'Acc.Tappeti #7'}],'2026-10-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2026-10-10':[{i:2400,d:'Royalties ANG-MAT Q3'},{i:10500,d:'Sped.Tappeti #6'}],'2026-10-13':[{i:62,d:'ZonWizard'}],'2026-10-16':[{i:300,d:'F24 Royalties ANG-MAT Q3'}],'2026-10-21':[{i:103,d:'Internet Mat-Ang'}],'2026-10-27':[{i:1000,d:'MAT-ANG'}],'2026-10-31':[{i:915,d:'Commercialista'}],
         '2026-11-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2026-11-13':[{i:62,d:'ZonWizard'}],'2026-11-14':[{i:610,d:'Trasp.Tappeti #6'}],'2026-11-16':[{i:3024,d:'IVA Q3/26'}],'2026-11-21':[{i:103,d:'Internet Mat-Ang'}],'2026-11-27':[{i:1000,d:'MAT-ANG'}],'2026-11-30':[{i:582,d:'2° Acc.IRES'},{i:298,d:'Acc.IRAP'}],
-        '2026-12-01':[{i:1667,d:'Acc.Copri #4 30%'}],'2026-12-03':[{i:300,d:'Advigator'},{i:3015,d:'Acc.Tappeti #8 30%'},{i:220,d:'Costi Plugin Mattia'}],'2026-12-13':[{i:62,d:'ZonWizard'}],'2026-12-15':[{i:7035,d:'Saldo Tappeti #7 70%'}],'2026-12-21':[{i:103,d:'Internet Mat-Ang'}],'2026-12-27':[{i:1000,d:'MAT-ANG'}],
-        // Eventi 2027 conservati per memoria (non simulati, end=2026-12-31)
-        '2027-01-04':[{i:10500,d:'Sped.Tappeti #7'}],'2027-02-08':[{i:610,d:'Trasp.Tappeti #7'}],'2027-02-14':[{i:3890,d:'Saldo Copri #4 70%'}],'2027-02-16':[{i:7035,d:'Saldo Tappeti #8 70%'},{i:4274,d:'IVA Q4/26'}],'2027-03-05':[{i:10500,d:'Sped.Tappeti #8'}],'2027-04-12':[{i:610,d:'Trasp.Tappeti #8'}],'2027-05-05':[{i:2500,d:'Sped.Copri #4'}]
+        '2026-12-01':[{i:1667,d:'Acc.Copri #4 30%'}],'2026-12-03':[{i:300,d:'Advigator'},{i:3015,d:'Acc.Tappeti #8 30%'},{i:220,d:'Costi Plugin Mattia'}],'2026-12-13':[{i:62,d:'ZonWizard'}],'2026-12-15':[{i:7035,d:'Saldo Tappeti #7 70%'}],'2026-12-21':[{i:103,d:'Internet Mat-Ang'}],'2026-12-27':[{i:1000,d:'MAT-ANG'},{i:1500,d:'Acc.IVA 2026 (ipotesi)'}],
+        // Eventi 2027 simulati (end=2027-04-30)
+        '2027-01-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2027-01-04':[{i:10500,d:'Sped.Tappeti #7'}],'2027-01-10':[{i:2400,d:'Royalties ANG-MAT Q4'}],'2027-01-13':[{i:62,d:'ZonWizard'}],'2027-01-16':[{i:300,d:'F24 Royalties ANG-MAT Q4'}],'2027-01-21':[{i:103,d:'Internet Mat-Ang'}],'2027-01-27':[{i:1000,d:'MAT-ANG'}],'2027-01-31':[{i:915,d:'Commercialista'}],
+        '2027-02-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2027-02-08':[{i:610,d:'Trasp.Tappeti #7'}],'2027-02-13':[{i:62,d:'ZonWizard'}],'2027-02-14':[{i:3890,d:'Saldo Copri #4 70%'}],'2027-02-16':[{i:7035,d:'Saldo Tappeti #8 70%'},{i:4274,d:'IVA Q4/26'}],'2027-02-21':[{i:103,d:'Internet Mat-Ang'}],'2027-02-27':[{i:1000,d:'MAT-ANG'}],
+        '2027-03-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2027-03-05':[{i:10500,d:'Sped.Tappeti #8'}],'2027-03-13':[{i:62,d:'ZonWizard'}],'2027-03-21':[{i:103,d:'Internet Mat-Ang'}],'2027-03-27':[{i:1000,d:'MAT-ANG'}],
+        '2027-04-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2027-04-10':[{i:2400,d:'Royalties ANG-MAT Q1/27'}],'2027-04-12':[{i:610,d:'Trasp.Tappeti #8'}],'2027-04-13':[{i:62,d:'ZonWizard'}],'2027-04-16':[{i:300,d:'F24 Royalties ANG-MAT Q1/27'}],'2027-04-21':[{i:103,d:'Internet Mat-Ang'}],'2027-04-27':[{i:1000,d:'MAT-ANG'}],'2027-04-30':[{i:915,d:'Commercialista'}],
+        '2027-05-05':[{i:2500,d:'Sped.Copri #4'}]
     },
     rs: {'2026-06-15':{cB:8000,cN:1500},'2026-06-25':{t:2140},'2026-09-15':{t:1600},'2026-09-19':{cB:4750,cN:2750,cT:2500},'2026-11-14':{t:1600},
-         // Arrivi 2027 conservati per memoria (non simulati, end=2026-12-31)
+         // Arrivi 2027 (T#7, T#8 simulati; C#4 post-modello)
          '2027-02-08':{t:1600},'2027-04-12':{t:1600},'2027-05-15':{cB:4750,cN:2750,cT:2500}},
     rc: [{d:'2026-05-15',n:'Copri #2 Trasp',q:1000},{d:'2026-06-15',n:'Copri #2 B+N',q:9500},{d:'2026-06-25',n:'Tappeti #4',q:2140},{d:'2026-09-15',n:'Tappeti #5',q:1600},{d:'2026-09-19',n:'Copri #3',q:10000},{d:'2026-11-14',n:'Tappeti #6',q:1600},
         // Arrivi 2027 conservati per memoria
@@ -524,7 +528,7 @@ function renderKPI(s) {
     const cashGg=(v.t*rn.t+(v.cB+v.cN+v.cT)*rn.c)-(ppc.t+ppc.c)*1.22;
     const items = [
         {l:'Liquidità Oggi',v:`€${f(s.li)}`,c:'--blue'},
-        {l:'Liquidità 31/12',v:`€${f(s.lf)}`,c:'--green'},
+        {l:'Liquidità 30/04/27',v:`€${f(s.lf)}`,c:'--green'},
         {l:'Cassa Recup./gg',v:`€${f(cashGg)}`,c:'--orange'},
         {l:'Cassa Minima',v:`€${f(s.cMin)}`,c:s.cMin<3000?'--red':'--green'},
         {l:'Variazione',v:`${s.vr>=0?'+':''}€${f(s.vr)}`,c:s.vr>=0?'--green':'--red'},
@@ -686,7 +690,7 @@ function renderSum(s) {
             <div class="sum-row"><span>Bonifici Amazon</span><span class="sum-val">€${f(s.bTot)}</span></div>
         </div>
         <div class="sum-card"><h4>📈 Patrimonio</h4>
-            <div class="sum-row"><span>Liquidità 31/12</span><span class="sum-val">€${f(s.lf)}</span></div>
+            <div class="sum-row"><span>Liquidità 30/04/27</span><span class="sum-val">€${f(s.lf)}</span></div>
             <div class="sum-row"><span>Magazzino</span><span class="sum-val" style="color:var(--purple)">€${f(s.vm)}</span></div>
             <div class="sum-row"><span>Merce in Transito</span><span class="sum-val" style="color:var(--orange)">€${f(s.mt)}</span></div>
             <div class="sum-row"><span>Cassa Massima</span><span class="sum-val">€${f(s.cMax)}</span></div>
