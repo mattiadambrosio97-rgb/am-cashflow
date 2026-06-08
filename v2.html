@@ -408,7 +408,7 @@ window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:re
 const C = {
     start:'2026-06-08', end:'2027-04-30',
     init: { cassa:43521, amazon:9442, stock:{t:672,cB:2234,cN:1200,cT:943} },
-    v: {t:13,cB:44,cN:14,cT:11},
+    v: {t:18,cB:44,cN:14,cT:11},
     // rn = cash netto per pezzo IVA incl, gia tolto Amazon fee + corriere + Gennaro (PPC tolto a parte)
     rn: {t:13.91,c:3.88},
     cm: {t:8.54,c:0.81},
@@ -417,7 +417,7 @@ const C = {
     eco: {
         tappeti: {prezzoIvaIncl:25.99, amazonFee:3.90, corriere:5.00, gennaro:1.00, ppcGgNetto:32, cmIvaIncl:8.54, ivaCM:'inclusa'},
         copri:   {prezzoIvaIncl:7.94,  amazonFee:0.64, corriere:2.69, gennaro:0,    ppcGgNetto:62, cmIvaIncl:0.81, ivaCM:'inclusa'},
-        cashRecuperatoGg: 333.87,  // 13 tappeti × 13,91 + 69 copri × 3,88 - PPC IVA incl 114,68 (stima conservativa post 08/06)
+        cashRecuperatoGg: 403.42,  // 18 tappeti × 13,91 + 69 copri × 3,88 - PPC IVA incl 114,68 (stima post 08/06)
         note: 'CM si paga separatamente via acconti/saldi/spedizioni a calendario (vedi sp). Non sottrarlo dal cash giornaliero o conteggio doppio.'
     },
     sp: {
