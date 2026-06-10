@@ -409,6 +409,20 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
         </div>
     </div>
 
+    <!-- RIEPILOGO TASSE (v3 new) -->
+    <div class="restock-card" id="taxCard">
+        <h3 style="color:var(--red)">💼 Riepilogo Tasse e Royalties</h3>
+        <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
+            <thead><tr style="border-bottom:1px solid var(--border2);text-align:right">
+                <th style="padding:8px;text-align:left">Voce</th>
+                <th style="padding:8px">Data pagamento</th>
+                <th style="padding:8px">Importo</th>
+                <th style="padding:8px">Stato</th>
+            </tr></thead>
+            <tbody id="taxBody"></tbody>
+        </table></div>
+    </div>
+
     <!-- RIEPILOGO MENSILE PER CATEGORIA (v3 new) -->
     <div class="restock-card" id="monthlyCard">
         <h3 style="color:var(--purple)">📊 Riepilogo Mensile per Categoria</h3>
@@ -605,6 +619,38 @@ function renderKPI(s) {
         {l:'Patrimonio Totale',v:`€${f(s.pt)}`,c:'--gold'}
     ];
     el.innerHTML = items.map(i=>`<div class="kpi kpi-accent" style="border-left-color:var(${i.c})"><div class="kpi-label">${i.l}</div><div class="kpi-val" style="color:var(${i.c})">${i.icon||''} ${i.v}</div></div>`).join('');
+}
+
+// v3 new: riepilogo tasse e royalties
+function renderTaxSummary(){
+    const start=new Date(C.start);
+    const items=[];
+    for(const [ds,arr] of Object.entries(C.sp)){
+        for(const s of arr){
+            if(/IVA|IRES|IRAP|F24|Royalties/i.test(s.d) && s.i>0){
+                items.push({date:ds, desc:s.d, amount:s.i, paid:new Date(ds)<start});
+            }
+        }
+    }
+    items.sort((a,b)=>a.date.localeCompare(b.date));
+    const rows=items.map(it=>{
+        const stato=it.paid?'<span style="color:var(--green)">✓ Pagato</span>':'<span style="color:var(--orange)">⏳ Da pagare</span>';
+        return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04);text-align:right;${it.paid?'opacity:0.6':''}">
+            <td style="padding:6px 8px;text-align:left">${it.desc}</td>
+            <td style="padding:6px 8px">${fD(new Date(it.date))}</td>
+            <td style="padding:6px 8px;font-weight:700">€${f(it.amount)}</td>
+            <td style="padding:6px 8px;text-align:center">${stato}</td>
+        </tr>`;
+    }).join('');
+    const totale=items.reduce((a,b)=>a+b.amount,0);
+    const daPagare=items.filter(x=>!x.paid).reduce((a,b)=>a+b.amount,0);
+    document.getElementById('taxBody').innerHTML=rows+`
+        <tr style="border-top:2px solid var(--border2);font-weight:700;text-align:right">
+            <td style="padding:10px 8px;text-align:left">TOTALE pianificato</td>
+            <td></td>
+            <td style="padding:10px 8px">€${f(totale)}</td>
+            <td style="padding:10px 8px;text-align:center;color:var(--orange)">Da pagare: €${f(daPagare)}</td>
+        </tr>`;
 }
 
 // v3 new: riepilogo mensile per categoria
@@ -1066,6 +1112,7 @@ const App={
         const{data:snapData}=simSnap();this.snapMap={};for(const d of snapData)this.snapMap[d.ds]=d;
         renderKPI(s);renderRevBar();renderStock(s);renderSum(s);renderChart(data,this.snapMap);
         renderAlertBanner(data);
+        renderTaxSummary();
         renderMonthlySummary(data);
         renderHistoricalPayments();
         saveSnapshot(s);
