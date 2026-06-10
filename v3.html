@@ -304,6 +304,17 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 </div>
 <script>function checkPw(){if(document.getElementById('pwInput').value==='310724'){document.getElementById('pwOverlay').style.display='none';sessionStorage.setItem('cf_auth','1');}else{document.getElementById('pwError').style.display='block';document.getElementById('pwInput').value='';}}if(sessionStorage.getItem('cf_auth')==='1')document.getElementById('pwOverlay').style.display='none';</script>
 <div class="app">
+    <!-- BANNER ALERT CASSA BASSA (v3 new) -->
+    <div id="alertBanner" style="display:none;background:var(--red-bg);border:1px solid var(--red);border-radius:12px;padding:16px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span style="font-size:24px">⚠️</span>
+            <div style="flex:1;min-width:200px">
+                <div style="font-weight:700;color:var(--red);margin-bottom:4px" id="alertTitle">Attenzione cassa bassa</div>
+                <div style="font-size:13px;color:var(--text2)" id="alertDetail"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- HERO -->
     <div class="hero">
         <div class="hero-top">
@@ -338,7 +349,11 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
     <!-- TABLE (desktop) -->
     <div class="tbl-card">
-        <div class="tbl-hdr"><h3>📋 Dettaglio</h3><span class="tbl-count" id="tblCount"></span></div>
+        <div class="tbl-hdr">
+            <h3>📋 Dettaglio</h3>
+            <span class="tbl-count" id="tblCount"></span>
+            <button onclick="App.exportCSV()" style="margin-left:auto;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px">⬇ Export CSV</button>
+        </div>
         <div class="tbl-scroll"><table><thead><tr>
             <th style="text-align:left">Data</th><th>Cassa</th><th>Amazon</th><th>Totale</th><th>Ricavi</th><th>Bonifici</th><th>Uscite</th><th style="text-align:left">Dettaglio</th>
             <th>Tap</th><th>CB</th><th>CN</th><th>CT</th>
@@ -392,6 +407,24 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
             <div class="restock-item"><span class="restock-date" style="color:var(--orange)">05/05/27</span><span class="restock-name">Sped.Copri #4</span><span class="restock-qty t-neg">-€2.500</span></div>
             <div class="restock-item" style="border-top:1px solid var(--border2);padding-top:8px;margin-top:8px"><span class="restock-date" style="font-weight:700">TOTALE</span><span class="restock-name"></span><span class="restock-qty t-neg" style="font-weight:700">-€39.919</span></div>
         </div>
+    </div>
+
+    <!-- RIEPILOGO MENSILE PER CATEGORIA (v3 new) -->
+    <div class="restock-card" id="monthlyCard">
+        <h3 style="color:var(--purple)">📊 Riepilogo Mensile per Categoria</h3>
+        <div style="overflow-x:auto"><table id="monthlyTable" style="width:100%;border-collapse:collapse;font-size:12px">
+            <thead><tr style="border-bottom:1px solid var(--border2);text-align:right">
+                <th style="padding:8px;text-align:left">Mese</th>
+                <th style="padding:8px;color:var(--orange)">Restock</th>
+                <th style="padding:8px;color:var(--red)">Tasse</th>
+                <th style="padding:8px;color:var(--purple)">Royalties</th>
+                <th style="padding:8px;color:var(--text2)">Ricorrenti</th>
+                <th style="padding:8px;color:var(--text)">Tot Uscite</th>
+                <th style="padding:8px;color:var(--green)">Cash In</th>
+                <th style="padding:8px;color:var(--gold)">Saldo</th>
+            </tr></thead>
+            <tbody id="monthlyBody"></tbody>
+        </table></div>
     </div>
 
     <!-- STORICO PAGAMENTI EFFETTUATI (pre C.start, gia onorati) -->
@@ -572,6 +605,59 @@ function renderKPI(s) {
         {l:'Patrimonio Totale',v:`€${f(s.pt)}`,c:'--gold'}
     ];
     el.innerHTML = items.map(i=>`<div class="kpi kpi-accent" style="border-left-color:var(${i.c})"><div class="kpi-label">${i.l}</div><div class="kpi-val" style="color:var(${i.c})">${i.icon||''} ${i.v}</div></div>`).join('');
+}
+
+// v3 new: riepilogo mensile per categoria
+function categorize(desc){
+    if(/Saldo|Sped|Trasp|Acc\.(Tappeti|Copri)|Acconto Tappeti|Acconto Copri/i.test(desc)) return 'restock';
+    if(/IVA|IRES|IRAP|F24/i.test(desc)) return 'tasse';
+    if(/Royalties/i.test(desc)) return 'royalties';
+    return 'ricorrenti';
+}
+function renderMonthlySummary(data){
+    const months={};
+    for(const d of data){
+        const ym=d.ds.slice(0,7);
+        if(!months[ym]) months[ym]={restock:0,tasse:0,royalties:0,ricorrenti:0,cashIn:0,bonifico:0};
+        months[ym].bonifico+=d.bon||0;
+        const sp=C.sp[d.ds];
+        if(sp) for(const s of sp){
+            if(s.i>0){
+                const cat=categorize(s.d);
+                months[ym][cat]+=s.i;
+            }
+        }
+        months[ym].cashIn+=d.bon||0;
+    }
+    const rows=Object.entries(months).sort().map(([ym,m])=>{
+        const tot=m.restock+m.tasse+m.royalties+m.ricorrenti;
+        const saldo=m.cashIn-tot;
+        const monthLbl=new Date(ym+'-01').toLocaleDateString('it-IT',{month:'short',year:'2-digit'});
+        return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04);text-align:right">
+            <td style="padding:6px 8px;text-align:left;font-weight:600">${monthLbl}</td>
+            <td style="padding:6px 8px">${m.restock?'€'+f(m.restock):'-'}</td>
+            <td style="padding:6px 8px">${m.tasse?'€'+f(m.tasse):'-'}</td>
+            <td style="padding:6px 8px">${m.royalties?'€'+f(m.royalties):'-'}</td>
+            <td style="padding:6px 8px">${m.ricorrenti?'€'+f(m.ricorrenti):'-'}</td>
+            <td style="padding:6px 8px;font-weight:700;color:var(--red)">€${f(tot)}</td>
+            <td style="padding:6px 8px;color:var(--green)">€${f(m.cashIn)}</td>
+            <td style="padding:6px 8px;font-weight:700;color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}€${f(saldo)}</td>
+        </tr>`;
+    }).join('');
+    document.getElementById('monthlyBody').innerHTML=rows;
+}
+
+// v3 new: banner alert cassa bassa
+function renderAlertBanner(data){
+    const SOGLIA=3000;
+    const critici=data.filter(d=>d.ca<SOGLIA);
+    if(critici.length===0){document.getElementById('alertBanner').style.display='none'; return;}
+    const minCassa=Math.min(...critici.map(d=>d.ca));
+    const dataMin=critici.find(d=>d.ca===minCassa);
+    const primaCritica=critici[0];
+    document.getElementById('alertTitle').textContent=`⚠ Attenzione: cassa scendera sotto €${f(SOGLIA)} in ${critici.length} giorni`;
+    document.getElementById('alertDetail').innerHTML=`Prima soglia critica: <strong>${fD(primaCritica.data)}</strong> con €${f(primaCritica.ca)} in cassa. Cassa minima: <strong>€${f(minCassa)}</strong> il <strong>${fD(dataMin.data)}</strong>.`;
+    document.getElementById('alertBanner').style.display='block';
 }
 
 // FIX v3: storico pagamenti pre-start (eventi gia onorati, conservati in sp)
@@ -979,6 +1065,8 @@ const App={
         const{data,s}=sim();this.allData=data;this.s=s;
         const{data:snapData}=simSnap();this.snapMap={};for(const d of snapData)this.snapMap[d.ds]=d;
         renderKPI(s);renderRevBar();renderStock(s);renderSum(s);renderChart(data,this.snapMap);
+        renderAlertBanner(data);
+        renderMonthlySummary(data);
         renderHistoricalPayments();
         saveSnapshot(s);
         renderSnapshots();
@@ -997,6 +1085,29 @@ const App={
         this.applyZoom();
         this.applyStockZoom();
         }catch(e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:14px">ERRORE: '+e.message+'\n\n'+e.stack+'</pre>';}
+    },
+    exportCSV(){
+        if(!this.allData||!this.allData.length){alert('Nessun dato da esportare'); return;}
+        const headers=['Data','Cassa','Amazon','Totale','Ricavi','Bonifici','Uscite','Dettaglio','Tappeti','CopriB','CopriN','CopriT'];
+        const rows=this.allData.map(d=>[
+            d.ds,
+            d.ca.toFixed(2),
+            d.am.toFixed(2),
+            d.tot.toFixed(2),
+            d.ric.toFixed(2),
+            d.bon.toFixed(2),
+            d.usc.toFixed(2),
+            '"'+(d.det||'').replace(/"/g,'""')+'"',
+            d.st.t,d.st.cB,d.st.cN,d.st.cT
+        ].join(','));
+        const csv=headers.join(',')+'\n'+rows.join('\n');
+        const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;
+        a.download='am-cashflow-'+C.start+'-'+C.end+'.csv';
+        document.body.appendChild(a);a.click();document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     },
     applyZoom(){
         const z=ZOOM_LEVELS[this.zoomIdx];
