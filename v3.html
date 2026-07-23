@@ -185,6 +185,8 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 .mc-stock-tbl .mc-stock-gg { font-size: 10px; display: block; margin-top: 1px; }
 
 /* —— RESTOCK —— */
+.scen-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--card); color: var(--text2); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.scen-btn.scen-active { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
 .restock-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r2); padding: 20px; margin-bottom: 20px; }
 .restock-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
 .restock-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--stock-sep); }
@@ -325,6 +327,13 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
                 <button class="theme-toggle" id="themeToggle" onclick="App.toggleTheme()" title="Cambia tema">🌖</button>
             </div>
         </div>
+        <!-- v3.1: scenari vendite -->
+        <div id="scenBar" style="display:flex;align-items:center;gap:8px;margin:12px 0 4px;flex-wrap:wrap">
+            <button class="scen-btn" id="scen80" onclick="setScen(0.8)">Prudente -20%</button>
+            <button class="scen-btn scen-active" id="scen100" onclick="setScen(1)">Base 100%</button>
+            <button class="scen-btn" id="scen120" onclick="setScen(1.2)">Ottimista +20%</button>
+            <span style="font-size:11px;color:var(--text3)">sui volumi di vendita; PPC invariato</span>
+        </div>
         <div class="kpi-strip" id="kpiStrip"></div>
     </div>
 
@@ -386,7 +395,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
     <!-- USCITE RESTOCK 2027 (generato da C.sp) -->
     <div class="restock-card">
-        <h3 style="color:var(--orange)">💸 Uscite Restock 2027 (gen-apr simulate, dopo fuori modello)</h3>
+        <h3 style="color:var(--orange)">💸 Uscite Restock 2027 (dentro l'orizzonte simulato; * = oltre)</h3>
         <div id="restockUscite27"></div>
     </div>
 
@@ -446,8 +455,11 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 
 <script>
 window.onerror=function(m,s,l,c,e){document.body.innerHTML='<pre style="color:red;padding:20px;font-size:16px;word-wrap:break-word">JS ERROR:\n'+m+'\nRiga: '+l+'\nCol: '+c+'\n\n'+(e&&e.stack?e.stack:'')+'</pre>';};
+// AGGIORNAMENTO PERIODICO: quando arrivano i dati reali, toccare SOLO queste righe:
+// start = data dei dati; updated = stessa data; init = cassa, saldo Amazon e stock reali.
+// Le voci di calendario precedenti a start finiscono da sole nello storico "pagati".
 const C = {
-    start:'2026-07-22', end:'2027-04-30',
+    start:'2026-07-22', end:'2027-07-31', updated:'2026-07-22',
     init: { cassa:36620, amazon:6616, stock:{t:1955,cB:7955,cN:1668,cT:237} },
     v: {t:18,cB:44,cN:14,cT:11},
     // rn = cash netto per pezzo IVA incl, gia tolto Amazon fee + corriere + Gennaro (PPC tolto a parte)
@@ -463,18 +475,33 @@ const C = {
     },
     sp: {
 '2026-06-03':[{i:272,d:'Advigator'},{i:90,d:'Costi Plugin Mattia'}],'2026-06-10':[{i:6900,d:'Saldo Tappeti #4 (PAGATO)'}],'2026-06-13':[{i:62,d:'ZonWizard'}],'2026-06-21':[{i:103,d:'Internet Mat-Ang'},{i:3890,d:'Saldo Copri #3 70% (PAGATO)'}],'2026-06-24':[{i:8300,d:'Sped.Tappeti #4 (PAGATO)'}],'2026-06-25':[{i:610,d:'Trasp.Tappeti #4 (PAGATO)'}],'2026-06-26':[{i:1000,d:'MAT-ANG maggio (PAGATO)'}],
-        '2026-07-03':[{i:300,d:'Advigator (PAGATO)'},{i:220,d:'Costi Plugin Mattia (PAGATO)'},{i:1581,d:'Gennaro prestazione occasionale (PAGATO)'}],'2026-07-05':[{i:500,d:'MAT-ANG giugno (MAT 500 pagato)'}],'2026-07-13':[{i:62,d:'ZonWizard'}],'2026-07-21':[{i:103,d:'Internet Mat-Ang'}],'2026-07-27':[{i:3000,d:'Acc.Tappeti #6 30% (spostato da 20/07)'},{i:1000,d:'MAT-ANG'}],'2026-07-29':[{i:500,d:'MAT-ANG Angelo giugno (spostato da 24/07)'}],'2026-07-31':[{i:915,d:'Commercialista'}],
+        '2026-07-03':[{i:300,d:'Advigator (PAGATO)'},{i:220,d:'Costi Plugin Mattia (PAGATO)'},{i:1581,d:'Gennaro prestazione occasionale (PAGATO)'}],'2026-07-05':[{i:500,d:'MAT-ANG giugno (MAT 500 pagato)'}],'2026-07-13':[{i:62,d:'ZonWizard'}],'2026-07-21':[{i:103,d:'Internet Mat-Ang'}],'2026-07-27':[{i:3000,d:'Acc.Tappeti #6 30% (spostato da 20/07)'},{i:1000,d:'MAT-ANG'}],'2026-07-29':[{i:500,d:'MAT-ANG Angelo giugno (spostato da 24/07)'},{i:500,d:'MAT-ANG Angelo maggio (arretrato: Mattia aveva gia preso mag+giu, Angelo no)'}],'2026-07-31':[{i:915,d:'Commercialista'}],
         '2026-08-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2026-08-08':[{i:2400,d:'Royalties ANG-MAT Q2 (spostato da 26/07)'}],'2026-08-13':[{i:62,d:'ZonWizard'}],'2026-08-16':[{i:5666,d:'IVA Q2/26'},{i:395,d:'F24 Ritenuta Gennaro'},{i:300,d:'F24 Royalties ANG-MAT Q2'}],'2026-08-20':[{i:2500,d:'Sped.Copri #3 (spostato da 09/09)'}],'2026-08-21':[{i:103,d:'Internet Mat-Ang'}],'2026-08-27':[{i:1000,d:'MAT-ANG'}],
         '2026-09-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2026-09-07':[{i:7500,d:'Saldo Tappeti #5 70% (spostato da 20/08)'}],'2026-09-13':[{i:62,d:'ZonWizard'}],'2026-09-21':[{i:103,d:'Internet Mat-Ang'}],'2026-09-25':[{i:10500,d:'Sped.Tappeti #5 (spostato da 05/09)'}],'2026-09-27':[{i:1000,d:'MAT-ANG'}],
         '2026-10-02':[{i:610,d:'Trasp.Tappeti #5 (spostato da 15/09)'}],'2026-10-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2026-10-05':[{i:7000,d:'Saldo Tappeti #6 70% (spostato da 20/09)'}],'2026-10-10':[{i:2400,d:'Royalties ANG-MAT Q3'}],'2026-10-13':[{i:62,d:'ZonWizard'}],'2026-10-15':[{i:2370,d:'Acc.Copri #4 30% (15k, merce 7900)'}],'2026-10-16':[{i:300,d:'F24 Royalties ANG-MAT Q3'}],'2026-10-21':[{i:103,d:'Internet Mat-Ang'}],'2026-10-27':[{i:1000,d:'MAT-ANG'}],'2026-10-31':[{i:915,d:'Commercialista'},{i:10500,d:'Sped.Tappeti #6 (spostato da 10/10)'},{i:3015,d:'Acc.Tappeti #7 (spostato da 01/10)'}],
         '2026-11-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2026-11-13':[{i:62,d:'ZonWizard'}],'2026-11-16':[{i:2774,d:'IVA Q3/26'}],'2026-11-20':[{i:610,d:'Trasp.Tappeti #6 (spostato da 14/11)'}],'2026-11-21':[{i:103,d:'Internet Mat-Ang'}],'2026-11-27':[{i:1000,d:'MAT-ANG'}],'2026-11-30':[{i:582,d:'2° Acc.IRES'},{i:298,d:'Acc.IRAP'}],
         '2026-12-01':[{i:5530,d:'Saldo Copri #4 70% (15k, merce 7900)'}],'2026-12-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2026-12-13':[{i:62,d:'ZonWizard'}],'2026-12-21':[{i:103,d:'Internet Mat-Ang'}],'2026-12-27':[{i:1000,d:'MAT-ANG'},{i:1500,d:'Acc.IVA 2026 (ipotesi)'}],
-        // Eventi 2027 simulati (end=2027-04-30)
+        // Eventi 2027 simulati (end=2027-07-31, esteso il 23/07/26 dal 30/04)
         '2027-01-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2027-01-10':[{i:2400,d:'Royalties ANG-MAT Q4'}],'2027-01-13':[{i:62,d:'ZonWizard'}],'2027-01-14':[{i:7035,d:'Saldo Tappeti #7 70% (spostato da 15/12)'}],'2027-01-16':[{i:300,d:'F24 Royalties ANG-MAT Q4'}],'2027-01-21':[{i:103,d:'Internet Mat-Ang'}],'2027-01-27':[{i:1000,d:'MAT-ANG'}],'2027-01-31':[{i:915,d:'Commercialista'}],
-        '2027-02-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'},{i:10500,d:'Sped.Tappeti #7 (spostato da 04/01)'}],'2027-02-13':[{i:62,d:'ZonWizard'}],'2027-02-16':[{i:4024,d:'IVA Q4/26'}],'2027-02-21':[{i:103,d:'Internet Mat-Ang'}],'2027-02-27':[{i:1000,d:'MAT-ANG'}],
-        '2027-03-01':[{i:3015,d:'Acc.Tappeti #8 30% (spostato da 03/12/26)'}],'2027-03-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2027-03-10':[{i:610,d:'Trasp.Tappeti #7 (spostato da 08/02)'},{i:3410,d:'Sped.Copri #4 (15k)'}],'2027-03-13':[{i:62,d:'ZonWizard'}],'2027-03-21':[{i:103,d:'Internet Mat-Ang'}],'2027-03-27':[{i:1000,d:'MAT-ANG'}],
+        '2027-02-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'},{i:10500,d:'Sped.Tappeti #7 (spostato da 04/01)'}],'2027-02-13':[{i:62,d:'ZonWizard'}],'2027-02-21':[{i:103,d:'Internet Mat-Ang'}],'2027-02-27':[{i:1000,d:'MAT-ANG'}],
+        '2027-03-01':[{i:3015,d:'Acc.Tappeti #8 30% (spostato da 03/12/26)'}],'2027-03-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2027-03-10':[{i:610,d:'Trasp.Tappeti #7 (spostato da 08/02)'},{i:3410,d:'Sped.Copri #4 (15k)'}],'2027-03-13':[{i:62,d:'ZonWizard'}],'2027-03-16':[{i:4024,d:'IVA Q4/26 saldo annuale (spostato da 16/02: scadenza corretta trimestrali; importo prudenziale, riverificare a fine ottobre con bolle T5-T6)'}],'2027-03-21':[{i:103,d:'Internet Mat-Ang'}],'2027-03-27':[{i:1000,d:'MAT-ANG'}],
         '2027-04-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2027-04-10':[{i:2400,d:'Royalties ANG-MAT Q1/27'}],'2027-04-13':[{i:62,d:'ZonWizard'}],'2027-04-16':[{i:300,d:'F24 Royalties ANG-MAT Q1/27'}],'2027-04-21':[{i:103,d:'Internet Mat-Ang'}],'2027-04-27':[{i:1000,d:'MAT-ANG'}],'2027-04-30':[{i:915,d:'Commercialista'}],
-        '2027-05-15':[{i:7035,d:'Saldo Tappeti #8 70% (fuori orizzonte 30/04)'}],'2027-06-20':[{i:10500,d:'Sped.Tappeti #8 (fuori orizzonte 30/04)'}],'2027-07-05':[{i:610,d:'Trasp.Tappeti #8 (fuori orizzonte 30/04)'}]
+        // Maggio-luglio 2027 (aggiunti il 23/07/26 con l'estensione dell'orizzonte).
+        // Le voci IPOTESI sono stime prudenziali NON verificate: validarle con Faustinoni/coi restock reali.
+        '2027-05-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2027-05-13':[{i:62,d:'ZonWizard'}],
+        '2027-05-15':[{i:7035,d:'Saldo Tappeti #8 70%'}],
+        '2027-05-17':[{i:4100,d:'IVA Q1/27 (IPOTESI: 4,4% del lordo come Q2; probabile meno per bolle T#7+C#4; 16/5 domenica)'}],
+        '2027-05-21':[{i:103,d:'Internet Mat-Ang'}],'2027-05-27':[{i:1000,d:'MAT-ANG'}],
+        '2027-06-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],'2027-06-13':[{i:62,d:'ZonWizard'}],
+        '2027-06-15':[{i:3015,d:'Acc.Tappeti #9 30% (IPOTESI ritmo restock)'}],
+        '2027-06-20':[{i:10500,d:'Sped.Tappeti #8'}],'2027-06-21':[{i:103,d:'Internet Mat-Ang'}],'2027-06-27':[{i:1000,d:'MAT-ANG'}],
+        '2027-06-30':[{i:15000,d:'IRES+IRAP 2026 a conguaglio + 1° acc. 2027 (IPOTESI GREZZA: dipende dall\'utile 2026, validare con Faustinoni)'}],
+        '2027-07-03':[{i:300,d:'Advigator'},{i:220,d:'Costi Plugin Mattia'}],
+        '2027-07-05':[{i:610,d:'Trasp.Tappeti #8'}],
+        '2027-07-10':[{i:2400,d:'Royalties ANG-MAT Q2/27'}],'2027-07-13':[{i:62,d:'ZonWizard'}],
+        '2027-07-15':[{i:2370,d:'Acc.Copri #5 30% (IPOTESI ritmo restock)'}],
+        '2027-07-16':[{i:300,d:'F24 Royalties ANG-MAT Q2/27'}],
+        '2027-07-21':[{i:103,d:'Internet Mat-Ang'}],'2027-07-27':[{i:1000,d:'MAT-ANG'}],'2027-07-31':[{i:915,d:'Commercialista'}]
     },
     rs: {'2026-07-15':{cB:8000,cN:1500},'2026-06-25':{t:2140},'2026-10-02':{t:1800},'2026-09-10':{cB:4750,cN:2750,cT:2500},'2026-11-20':{t:1800},
          // Arrivi 2027 (T#7, T#8 simulati; C#4 post-modello)
@@ -483,6 +510,17 @@ const C = {
         // Arrivi 2027 conservati per memoria
         {d:'2027-03-10',n:'Tappeti #7',q:1800},{d:'2027-07-05',n:'Tappeti #8',q:1800},{d:'2027-03-30',n:'Copri #4',q:15000}]
 };
+
+// v3.1: scenari vendite (volumi ±20%; PPC invariato: nel prudente vendi meno con spesa ads piena)
+let SCEN=1;
+const V_BASE={...C.v};
+function setScen(m){
+    SCEN=m;
+    C.v={t:+(V_BASE.t*m).toFixed(1),cB:+(V_BASE.cB*m).toFixed(1),cN:+(V_BASE.cN*m).toFixed(1),cT:+(V_BASE.cT*m).toFixed(1)};
+    document.querySelectorAll('.scen-btn').forEach(b=>b.classList.remove('scen-active'));
+    document.getElementById(m===0.8?'scen80':m===1.2?'scen120':'scen100').classList.add('scen-active');
+    App.init();
+}
 
 // Snapshot frozen al 12/05/2026 — NON MODIFICARE MAI
 const C0 = {
@@ -506,18 +544,10 @@ function sim() {
     // FIX v3 A1: rH preriempita con cash dinamico calcolato (no hardcoded 480)
     const cashGgInit = (v.t*rn.t + (v.cB+v.cN+v.cT)*rn.c) - (C.ppc.t+C.ppc.c)*1.22;
     const rH=[]; for(let i=16;i>=1;i--)rH.push({d:new Date(start.getTime()-i*D),r:cashGgInit});
-    // Pre-scan IVA groups: find all IVA entries, group by label, calc totals
-    const ivaGrp={};
-    for(const[ds,arr] of Object.entries(sp)){
-        for(const s of arr){
-            if(s.d.startsWith('IVA')&&s.i>0&&!s.f){
-                if(!ivaGrp[s.d])ivaGrp[s.d]={total:0,count:0,dates:[],adjusted:null};
-                ivaGrp[s.d].total+=s.i;ivaGrp[s.d].count++;ivaGrp[s.d].dates.push(ds);
-            }
-        }
-    }
-    for(const g of Object.values(ivaGrp))g.dates.sort();
-    const data=[]; let cur=new Date(start.getTime()+D); let ppcIvaAccum=0;
+    // v3.1 (23/07/26): rimosso il credito IVA PPC dal motore. Verificato su Q2 reale
+    // (fatture ricevute + bolla doganale): le cifre IVA a calendario sono GIA nette
+    // di tutti i crediti (fee, PPC, import). Scontarle ancora era un doppio conteggio.
+    const data=[]; let cur=new Date(start.getTime()+D);
     while(cur<=end){
         const ds=cur.toISOString().slice(0,10),r=rs[ds];
         if(r){for(const k in r)if(typeof r[k]==='number')st[k]+=r[k];}
@@ -528,7 +558,7 @@ function sim() {
         const ppcDay=C.ppc.t+C.ppc.c;const ppcConIva=ppcDay*1.22;
         const ric=ricLordo-ppcConIva;
         am+=ricLordo;rH.push({d:new Date(cur),r:ricLordo});
-        am-=ppcConIva;ppcIvaAccum+=ppcDay*0.22;
+        am-=ppcConIva;
         let bon=0;const dd=Math.floor((cur-bS)/D);
         if(dd>=0&&dd%10===0){
             const tgt=new Date(cur.getTime()-18*D);
@@ -544,21 +574,7 @@ function sim() {
         let usc=0,ent=0;const det=[];
         const spese=sp[ds];
         if(spese)for(const s of spese){
-            let amt=s.i;
-            if(s.d.startsWith('IVA')&&amt>0&&!s.f){
-                const g=ivaGrp[s.d];
-                // First rate of this group? Snapshot credit, calc adjusted rate
-                if(g.adjusted===null&&ds===g.dates[0]&&ppcIvaAccum>0){
-                    const cred=Math.min(ppcIvaAccum,g.total);
-                    g.adjusted=Math.round((g.total-cred)/g.count*100)/100;
-                    g.creditUsed=Math.round(cred);
-                    ppcIvaAccum=Math.round((ppcIvaAccum-cred)*100)/100;
-                }
-                if(g.adjusted!==null){
-                    amt=g.adjusted;
-                    if(ds===g.dates[0]&&g.creditUsed>0)det.push('Cred.IVA PPC -\u20ac'+g.creditUsed+' su '+g.count+' rate');
-                }
-            }
+            const amt=s.i;
             if(amt<0){ent-=amt;ca-=amt;}else if(amt>0){usc+=amt;ca-=amt;}
             det.push(s.d);
         }
@@ -568,12 +584,18 @@ function sim() {
     }
     const last=data[data.length-1],li=I.cassa+I.amazon,sf=last.st,cm=C.cm;
     const vm=sf.t*cm.t+(sf.cB+sf.cN+sf.cT)*cm.c;
-    // FIX v3 A2: mt calcolato dinamicamente da acconti futuri pagati per restock non ancora arrivati
+    // FIX v3.1 (23/07/26): merce in transito = SOLO acconti merce (Tappeti/Copri) di ordini
+    // non ancora arrivati entro end (arrivo in rc oltre orizzonte o assente).
+    // Prima il regex contava anche Acc.IRES/IRAP/IVA e acconti di merce gia in magazzino: +10.765 fantasma.
     let mt=0;
     for(const [ds, arr] of Object.entries(sp)){
         if(new Date(ds)<start || new Date(ds)>end) continue;
         for(const s of arr){
-            if(/Acc\.|Acconto/.test(s.d) && s.i>0) mt+=s.i;
+            const m=s.d.match(/Acc\.\s*(Tappeti|Copri) #(\d+)/i);
+            if(!m || s.i<=0) continue;
+            const nome=m[1]+' #'+m[2];
+            const arrivo=C.rc.find(r=>r.n.indexOf(nome)===0);
+            if(!arrivo || new Date(arrivo.d)>end) mt+=s.i;
         }
     }
     mt=Math.round(mt);
@@ -581,10 +603,11 @@ function sim() {
 }
 
 function simSnap(){
-    const bk={start:C.start,init:JSON.parse(JSON.stringify(C.init))};
-    C.start=C0.start;C.init=JSON.parse(JSON.stringify(C0.init));
+    // v3.1: la curva snapshot resta sempre a volumi base, anche con uno scenario attivo
+    const bk={start:C.start,init:JSON.parse(JSON.stringify(C.init)),v:{...C.v}};
+    C.start=C0.start;C.init=JSON.parse(JSON.stringify(C0.init));C.v={...V_BASE};
     const r=sim();
-    C.start=bk.start;C.init=bk.init;
+    C.start=bk.start;C.init=bk.init;C.v=bk.v;
     return r;
 }
 
@@ -592,9 +615,11 @@ function renderKPI(s) {
     const el=document.getElementById('kpiStrip');
     const v=C.v,rn=C.rn,ppc=C.ppc;
     const cashGg=(v.t*rn.t+(v.cB+v.cN+v.cT)*rn.c)-(ppc.t+ppc.c)*1.22;
+    const endLbl=fD(new Date(C.end)).replace(/\/20(\d\d)$/,'/$1');
+    const startLbl=fD(new Date(C.start)).replace(/\/20(\d\d)$/,'/$1');
     const items = [
-        {l:'Liquidità Oggi',v:`€${f(s.li)}`,c:'--blue'},
-        {l:'Liquidità 30/04/27',v:`€${f(s.lf)}`,c:'--green'},
+        {l:'Liquidità al '+startLbl,v:`€${f(s.li)}`,c:'--blue'},
+        {l:'Liquidità '+endLbl,v:`€${f(s.lf)}`,c:'--green'},
         {l:'Cassa Recup./gg',v:`€${f(cashGg)}`,c:'--orange'},
         {l:'Cassa Minima',v:`€${f(s.cMin)}`,c:s.cMin<3000?'--red':'--green'},
         {l:'Variazione',v:`${s.vr>=0?'+':''}€${f(s.vr)}`,c:s.vr>=0?'--green':'--red'},
@@ -711,7 +736,8 @@ function renderHistoricalPayments() {
 // v3: liste restock generate dai dati C (sempre collegate, mai hardcoded)
 function renderRestockArrivi(){
     const el=document.getElementById('restockArrivi'); if(!el)return;
-    const items=[...C.rc].sort((a,b)=>a.d<b.d?-1:1);
+    // v3.1: solo arrivi futuri (i passati sono gia dentro lo stock iniziale, mostrarli confonde)
+    const items=[...C.rc].filter(r=>r.d>=C.start).sort((a,b)=>a.d<b.d?-1:1);
     el.innerHTML=items.map(r=>{
         const [y,m,g]=r.d.split('-'); const is27=y>='2027';
         const dstr=is27?`${g}/${m}/27`:`${g}/${m}`;
@@ -731,13 +757,14 @@ function renderRestockUscite(){
     }
     rows.sort((a,b)=>a.ds<b.ds?-1:1);
     let tot=0;
+    const endLbl=fD(new Date(C.end)).replace(/\/20(\d\d)$/,'/$1');
     let h=rows.map(r=>{
         tot+=r.i; const[y,m,g]=r.ds.split('-');
-        const fuori=r.ds>'2027-04-30';
+        const fuori=r.ds>C.end;
         const nome=r.d.replace(/ \(.*\)/,'')+(fuori?' *':'');
         return `<div class="restock-item"><span class="restock-date" style="color:var(--orange)">${g}/${m}/27</span><span class="restock-name">${nome}</span><span class="restock-qty t-neg">-€${fmtI(r.i)}</span></div>`;
     }).join('');
-    h+=`<div class="restock-item" style="border-top:1px solid var(--border2);padding-top:8px;margin-top:8px"><span class="restock-date" style="font-weight:700">TOTALE</span><span class="restock-name" style="color:var(--text3);font-size:11px">* = fuori orizzonte 30/04</span><span class="restock-qty t-neg" style="font-weight:700">-€${fmtI(tot)}</span></div>`;
+    h+=`<div class="restock-item" style="border-top:1px solid var(--border2);padding-top:8px;margin-top:8px"><span class="restock-date" style="font-weight:700">TOTALE</span><span class="restock-name" style="color:var(--text3);font-size:11px">* = fuori orizzonte ${endLbl}</span><span class="restock-qty t-neg" style="font-weight:700">-€${fmtI(tot)}</span></div>`;
     el.innerHTML=h;
 }
 
@@ -818,7 +845,7 @@ function renderMobileFlows(data, days) {
         <colgroup><col class="mc-col-date"><col class="mc-col-in"><col class="mc-col-out"><col class="mc-col-tot"></colgroup>
         <thead><tr><th>Data</th><th>Entrate</th><th>Uscite</th><th>Liquidità</th></tr></thead><tbody>`;
 
-    h+=`<tr class="mc-init"><td>11/07</td><td style="color:var(--text3)">—</td><td style="color:var(--text3)">—</td><td>€${f(C.init.cassa+C.init.amazon)}</td></tr>`;
+    h+=`<tr class="mc-init"><td>${fD(new Date(C.start)).slice(0,5)}</td><td style="color:var(--text3)">—</td><td style="color:var(--text3)">—</td><td>€${f(C.init.cassa+C.init.amazon)}</td></tr>`;
 
     for(const d of imp){
         const rc=d.ca<0?'mc-bad':d.ca<3000?'mc-warn':d.bon>0?'mc-ok':'';
@@ -852,7 +879,7 @@ function renderMobileStock(allData, days) {
     const mesi=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
 
     const stockDates=[];
-    stockDates.push({lbl:'11/07',st:C.init.stock,rs:false});
+    stockDates.push({lbl:fD(new Date(C.start)).slice(0,5),st:C.init.stock,rs:false});
 
     if(isMonth){
         let lm=-1;
@@ -933,7 +960,7 @@ function renderSum(s) {
             <div class="sum-row"><span>Bonifici Amazon</span><span class="sum-val">€${f(s.bTot)}</span></div>
         </div>
         <div class="sum-card"><h4>📈 Patrimonio</h4>
-            <div class="sum-row"><span>Liquidità 30/04/27</span><span class="sum-val">€${f(s.lf)}</span></div>
+            <div class="sum-row"><span>Liquidità ${fD(new Date(C.end)).replace(/\/20(\d\d)$/,'/$1')}</span><span class="sum-val">€${f(s.lf)}</span></div>
             <div class="sum-row"><span>Magazzino</span><span class="sum-val" style="color:var(--purple)">€${f(s.vm)}</span></div>
             <div class="sum-row"><span>Merce in Transito</span><span class="sum-val" style="color:var(--orange)">€${f(s.mt)}</span></div>
             <div class="sum-row"><span>Cassa Massima</span><span class="sum-val">€${f(s.cMax)}</span></div>
@@ -1091,9 +1118,10 @@ function renderTableZoom(data, days) {
     const ss=(v,l,c)=>v===0||v<c?'cr':v<l?'lo':'ok';
     const sc=(v,l,c)=>`<td><span class="sdot sdot-${ss(v,l,c)}"></span>${v}</td>`;
     let h='';
+    const startLbl=fD(new Date(C.start)).slice(0,5);
     if(days===1){
         const ab=ds=>{const a=C.rc.filter(r=>r.d===ds);return a.length?a.map(x=>`<span class="tag tag-restock">📦 ${x.n}</span>`).join(' '):'';}
-        h+=`<tr class="row-good"><td>11/07</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td></tr>`;
+        h+=`<tr class="row-good"><td>${startLbl}</td><td>${f(I.cassa)}</td><td>${f(I.amazon)}</td><td class="t-bold">${f(I.cassa+I.amazon)}</td><td class="t-dim">—</td><td class="t-dim">—</td><td class="t-dim">—</td><td><span class="tag tag-real">REALE</span></td><td>${s.t}</td><td>${s.cB}</td><td>${s.cN}</td><td>${s.cT}</td></tr>`;
         for(const d of data){
             const rc=d.ca<0?'row-bad':d.ca<3000?'row-warn':d.bon>0?'row-good':'';
             const b=ab(d.ds),det=b?(b+(d.det?' · '+d.det:'')):d.det,k=d.st;
@@ -1138,7 +1166,7 @@ const App={
         const heroDate=document.getElementById('heroDate');
         if(heroDate){
             const ds=new Date(C.start),de=new Date(C.end);
-            heroDate.textContent=ds.toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'})+' → '+de.toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'});
+            heroDate.textContent=ds.toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'})+' → '+de.toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'})+' · dati reali al '+fD(new Date(C.updated||C.start));
         }
         // Aggiorna stock title dinamico
         const stockTitle=document.getElementById('stockTitle');
