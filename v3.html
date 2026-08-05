@@ -134,7 +134,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 .tbl-scroll th:nth-child(8) { text-align: left; }
 .tbl-scroll td { padding: 9px 8px; border-bottom: 1px solid var(--row-sep); white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
 .tbl-scroll td:first-child { text-align: left; color: var(--text2); }
-.tbl-scroll td:nth-child(8) { text-align: left; max-width: 180px; overflow: hidden; text-overflow: ellipsis; font-size: 10px; color: var(--text3); }
+.tbl-scroll td:nth-child(8) { text-align: left; max-width: 240px; white-space: normal; word-break: break-word; line-height: 1.4; padding-top: 7px; padding-bottom: 7px; font-size: 10px; color: var(--text3); }
 .tbl-scroll tr:hover td { background: var(--row-hover); }
 .t-pos { color: var(--green); } .t-neg { color: var(--red); } .t-dim { color: var(--text3); }
 .t-bold { font-weight: 700; }
@@ -506,10 +506,10 @@ const C = {
         '2027-07-16':[{i:300,d:'F24 Royalties ANG-MAT Q2/27'}],
         '2027-07-20':[{i:5250,d:'Sped.Tappeti #8 - 2a rata 50% (dilazione 30gg)'}],'2027-07-21':[{i:103,d:'Internet Mat-Ang'}],'2027-07-27':[{i:1000,d:'MAT-ANG'}],'2027-07-31':[{i:915,d:'Commercialista'}]
     },
-    rs: {'2026-07-15':{cB:8000,cN:1500},'2026-06-25':{t:2140},'2026-10-02':{t:1800},'2026-09-10':{cB:4750,cN:2750,cT:2500},'2026-11-20':{t:1800},
+    rs: {'2026-07-15':{cB:8000,cN:1500},'2026-06-25':{t:2140},'2026-10-02':{t:1800},'2026-09-01':{cB:4750,cN:2750,cT:2500},'2026-11-20':{t:1800},
          // Arrivi 2027 (T#7, T#8 simulati; C#4 post-modello)
          '2027-03-10':{t:1800},'2027-07-05':{t:1800},'2027-03-30':{cB:9500,cN:3000,cT:2500}},
-    rc: [{d:'2026-05-15',n:'Copri #2 Trasp',q:1000},{d:'2026-07-15',n:'Copri #2 B+N',q:9500},{d:'2026-06-25',n:'Tappeti #4',q:2140},{d:'2026-10-02',n:'Tappeti #5',q:1800},{d:'2026-09-10',n:'Copri #3',q:10000},{d:'2026-11-20',n:'Tappeti #6',q:1800},
+    rc: [{d:'2026-05-15',n:'Copri #2 Trasp',q:1000},{d:'2026-07-15',n:'Copri #2 B+N',q:9500},{d:'2026-06-25',n:'Tappeti #4',q:2140},{d:'2026-10-02',n:'Tappeti #5',q:1800},{d:'2026-09-01',n:'Copri #3',q:10000},{d:'2026-11-20',n:'Tappeti #6',q:1800},
         // Arrivi 2027 conservati per memoria
         {d:'2027-03-10',n:'Tappeti #7',q:1800},{d:'2027-07-05',n:'Tappeti #8',q:1800},{d:'2027-03-30',n:'Copri #4',q:15000}]
 };
