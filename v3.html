@@ -393,10 +393,10 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
         <div id="restockArrivi"></div>
     </div>
 
-    <!-- USCITE RESTOCK 2027 (generato da C.sp) -->
+    <!-- PIANO RESTOCK COMPLETO: costi e scadenze per ogni ordine (generato da C.sp + C.rc) -->
     <div class="restock-card">
-        <h3 style="color:var(--orange)">💸 Uscite Restock 2027 (dentro l'orizzonte simulato; * = oltre)</h3>
-        <div id="restockUscite27"></div>
+        <h3 style="color:var(--orange)">💸 Piano Restock: costi e scadenze</h3>
+        <div id="restockPlan"></div>
     </div>
 
     <!-- RIEPILOGO TASSE (v3 new) -->
@@ -654,13 +654,21 @@ function renderTaxSummary(){
     }).join('');
     const totale=items.reduce((a,b)=>a+b.amount,0);
     const daPagare=items.filter(x=>!x.paid).reduce((a,b)=>a+b.amount,0);
+    const isImposta=d=>/IVA|IRES|IRAP|F24/i.test(d);
+    const impPagare=items.filter(x=>!x.paid&&isImposta(x.desc)).reduce((a,b)=>a+b.amount,0);
+    const royPagare=daPagare-impPagare;
+    const sub=(lbl,val,col)=>`<tr style="text-align:right;color:${col}">
+            <td style="padding:4px 8px;text-align:left;font-size:11px">${lbl}</td>
+            <td></td><td style="padding:4px 8px;font-weight:700">€${f(val)}</td><td></td></tr>`;
     document.getElementById('taxBody').innerHTML=rows+`
         <tr style="border-top:2px solid var(--border2);font-weight:700;text-align:right">
             <td style="padding:10px 8px;text-align:left">TOTALE pianificato</td>
             <td></td>
             <td style="padding:10px 8px">€${f(totale)}</td>
             <td style="padding:10px 8px;text-align:center;color:var(--orange)">Da pagare: €${f(daPagare)}</td>
-        </tr>`;
+        </tr>`
+        +sub('di cui imposte da pagare (IVA, IRES, IRAP, F24)',impPagare,'var(--red)')
+        +sub('di cui royalties ai soci da pagare',royPagare,'var(--purple)');
 }
 
 // v3 new: riepilogo mensile per categoria
@@ -749,25 +757,62 @@ function renderRestockArrivi(){
         return `<div class="restock-item"><span class="restock-date"${st}>${dstr}</span><span class="restock-name">${r.n}</span><span class="restock-qty${qc}"${st}>+${fmtI(r.q)}${is27?' (2027)':''}</span></div>`;
     }).join('');
 }
-function renderRestockUscite(){
-    const el=document.getElementById('restockUscite27'); if(!el)return;
-    const rows=[];
-    for(const[ds,arr] of Object.entries(C.sp)){
-        if(ds<'2027-01-01')continue;
+// Piano restock completo: raggruppa per ordine (Tappeti #N / Copri #N) tutte le voci
+// di C.sp (acconto, saldo, spedizione, trasporto) con data, importo, stato e costo per pezzo.
+function renderRestockPlan(){
+    const el=document.getElementById('restockPlan'); if(!el)return;
+    const start=new Date(C.start);
+    const dbr=ds=>{const[y,m,g]=ds.split('-');return g+'/'+m+'/'+y.slice(2);};
+    const ord={};
+    for(const [ds,arr] of Object.entries(C.sp)){
         for(const s of arr){
-            if(/(Tappeti|Copri) #\d/.test(s.d) && /Acc\.|Saldo|Sped\.|Trasp\./.test(s.d)) rows.push({ds,d:s.d,i:s.i});
+            const m=s.d.match(/(Acc\.|Acconto|Saldo|Sped\.|Trasp\.)\s*(Tappeti|Copri)\s*#(\d+)/i);
+            if(!m||s.i<=0) continue;
+            const k=(m[2].toLowerCase()==='tappeti'?'Tappeti':'Copri')+' #'+m[3];
+            if(!ord[k]) ord[k]={voci:[],tot:0};
+            ord[k].voci.push({ds,d:s.d,i:s.i});
+            ord[k].tot+=s.i;
         }
     }
-    rows.sort((a,b)=>a.ds<b.ds?-1:1);
-    let tot=0;
-    const endLbl=fD(new Date(C.end)).replace(/\/20(\d\d)$/,'/$1');
-    let h=rows.map(r=>{
-        tot+=r.i; const[y,m,g]=r.ds.split('-');
-        const fuori=r.ds>C.end;
-        const nome=r.d.replace(/ \(.*\)/,'')+(fuori?' *':'');
-        return `<div class="restock-item"><span class="restock-date" style="color:var(--orange)">${g}/${m}/27</span><span class="restock-name">${nome}</span><span class="restock-qty t-neg">-€${fmtI(r.i)}</span></div>`;
-    }).join('');
-    h+=`<div class="restock-item" style="border-top:1px solid var(--border2);padding-top:8px;margin-top:8px"><span class="restock-date" style="font-weight:700">TOTALE</span><span class="restock-name" style="color:var(--text3);font-size:11px">* = fuori orizzonte ${endLbl}</span><span class="restock-qty t-neg" style="font-weight:700">-€${fmtI(tot)}</span></div>`;
+    const first=k=>ord[k].voci.map(v=>v.ds).sort()[0];
+    const keys=Object.keys(ord).sort((a,b)=>first(a)<first(b)?-1:1);
+    let gTot=0,gPagare=0,h='';
+    for(const k of keys){
+        const o=ord[k]; o.voci.sort((a,b)=>a.ds<b.ds?-1:1);
+        const a=C.rc.find(r=>r.n.indexOf(k)===0);
+        const fuori=a&&a.d>C.end;
+        const info=a?`${fmtI(a.q)} pz · arrivo ${dbr(a.d)}${fuori?' (fuori orizzonte)':''}`:'arrivo oltre l\'orizzonte';
+        const pz=a?o.tot/a.q:null;
+        // ordini avviati prima dell'inizio del calendario: l'acconto iniziale non c'e', totale parziale
+        const parziale=!o.voci.some(v=>/Acc\.|Acconto/i.test(v.d));
+        const pagare=o.voci.filter(v=>new Date(v.ds)>=start).reduce((x,y)=>x+y.i,0);
+        gTot+=o.tot; gPagare+=pagare;
+        h+=`<div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:12px">
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;margin-bottom:4px">
+                <strong style="font-size:14px">${k}</strong>
+                <span style="font-size:11px;color:var(--text3)">${info}</span>
+                <span style="margin-left:auto;font-weight:700">€${fmtI(Math.round(o.tot))}${parziale?' *':''}</span>
+                ${pz?`<span style="font-size:11px;color:var(--text3)">€${f(pz)}/pz${parziale?' *':''}</span>`:''}
+            </div>`;
+        for(const v of o.voci){
+            const pagato=new Date(v.ds)<start;
+            const nome=v.d.replace(/\s*\([^)]*\)\s*/g,' ').trim();
+            h+=`<div class="restock-item" style="${pagato?'opacity:0.5':''}">
+                <span class="restock-date">${dbr(v.ds)}</span>
+                <span class="restock-name">${nome}</span>
+                <span class="restock-qty" style="color:${pagato?'var(--green)':'var(--red)'}">${pagato?'✓ €'+fmtI(v.i):'-€'+fmtI(v.i)}</span></div>`;
+        }
+        h+='</div>';
+    }
+    h+=`<div class="restock-item" style="border-top:2px solid var(--border2);padding-top:10px">
+        <span class="restock-date" style="font-weight:700">TOTALE</span>
+        <span class="restock-name" style="color:var(--text3);font-size:11px">merce, spedizioni e trasporti di tutti gli ordini a calendario</span>
+        <span class="restock-qty" style="font-weight:700">€${fmtI(Math.round(gTot))}</span></div>
+        <div class="restock-item">
+        <span class="restock-date" style="font-weight:700;color:var(--orange)">DA PAGARE</span>
+        <span class="restock-name" style="color:var(--text3);font-size:11px">dal ${dbr(C.start)} in avanti</span>
+        <span class="restock-qty t-neg" style="font-weight:700">-€${fmtI(Math.round(gPagare))}</span></div>
+        <div style="font-size:11px;color:var(--text3);padding-top:8px;line-height:1.5">* Ordine avviato prima del 03/06/26: l'acconto iniziale non e' a calendario, quindi totale e costo per pezzo sono parziali. I costi non comprendono il dazio e l'IVA di importazione quando fatturati a parte.</div>`;
     el.innerHTML=h;
 }
 
@@ -1162,7 +1207,7 @@ const App={
         renderMonthlySummary(data);
         renderHistoricalPayments();
         renderRestockArrivi();
-        renderRestockUscite();
+        renderRestockPlan();
         saveSnapshot(s);
         renderSnapshots();
         // Aggiorna hero-date dinamicamente con start/end del modello
